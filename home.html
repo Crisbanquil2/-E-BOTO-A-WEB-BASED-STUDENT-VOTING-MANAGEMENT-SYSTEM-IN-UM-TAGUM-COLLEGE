@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Home</title>
+    <meta name="color-scheme" content="light only">
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="../Dasboard for Student or user/dashboard.css">
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        /* Ensure dashboard content displays properly */
+        .home-section {
+            display: block !important;
+            min-height: 100vh;
+        }
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 24px 0;
+            border: 1px solid #e9ecef;
+        }
+        .main-title {
+            color: #d32f2f;
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .main-subtitle {
+            font-size: 18px;
+            color: #666666;
+            margin: 0;
+        }
+        .content {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 16px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+    </style>
+    <script>
+        // Session management
+        function getSession() {
+            try {
+                const sessionData = localStorage.getItem('svms_session') || sessionStorage.getItem('svms_session');
+                return sessionData ? JSON.parse(sessionData) : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function clearSession() {
+            localStorage.removeItem('svms_session');
+            sessionStorage.removeItem('svms_session');
+        }
+
+        function checkAuth() {
+            const session = getSession();
+            if (!session) {
+                // Redirect to login if not authenticated
+                window.location.href = '../Login/login.html';
+                return false;
+            }
+            return session;
+        }
+
+        function displayUserInfo(session) {
+            const welcomeElement = document.querySelector('.card h1');
+            if (welcomeElement && session) {
+                welcomeElement.textContent = `Welcome back, ${session.firstName} ${session.lastName}!`;
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                clearSession();
+                window.location.href = '../Login/login.html';
+            }
+        }
+
+        function setActiveLink(){
+            const path = location.pathname.toLowerCase();
+            document.querySelectorAll('.menu a').forEach(a=>{
+                const href = a.getAttribute('href');
+                if (!href) return;
+                const isIndex = href.endsWith('index.html') || href === '#';
+                if ((isIndex && /dashboard|index\.html$/i.test(path)) || path.endsWith(href.toLowerCase())) {
+                    a.classList.add('active');
+                }
+            });
+            const menu = document.querySelector('.menu');
+            if (menu) {
+                menu.addEventListener('click', function(e){
+                    const link = e.target.closest('a');
+                    if (!link) return;
+                    menu.querySelectorAll('a').forEach(a=>a.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            }
+        }
+        
+        // Chart functionality
+        let homeChart = null;
+
+        function renderHomeChart() {
+            const ctx = document.getElementById('homeLineChart');
+            if (!ctx) return;
+
+            if (homeChart) {
+                homeChart.destroy();
+            }
+
+            const position = document.getElementById('homePosition').value;
+            
+            // Sample data - you can replace this with actual API calls
+            const sampleData = {
+                'President': {
+                    labels: ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'],
+                    datasets: [
+                        {
+                            label: 'Cris banquil',
+                            data: [100, 50, 0, 0, 0],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Cris Banquil Cute',
+                            data: [0, 50, 100, 100, 0],
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Alex Pizza',
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(251, 146, 60, 0.8)',
+                            borderColor: 'rgb(251, 146, 60)',
+                            borderWidth: 1
+                        }
+                    ]
+                }
+            };
+
+            const data = sampleData[position] || sampleData['President'];
+
+            homeChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (it) => `${it.dataset.label}: ${it.formattedValue}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: v => v + '%'
+                            }
+                        }
+                    },
+                    datasets: {
+                        bar: {
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.6
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const session = checkAuth();
+            if (session) {
+                displayUserInfo(session);
+                setActiveLink();
+                renderHomeChart();
+            }
+        });
+    </script>
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Main navigation">
+            <div class="navbar-logo">
+                <img src="../pictures/UM-TAGUM (1).png" alt="UM-TAGUM College Logo" class="navbar-logo-img">
+                <span class="brand-title" style="color:#fff; font-weight:800; letter-spacing:.5px; font-size:18px; text-transform:uppercase; margin-left:10px;">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/index.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/index.html#candidates-section">Candidates</a></li>
+                <li role="none"><a role="menuitem" href="../Voting Status/voting_status_working.html">Voting Status</a></li>
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/index.html#results-section">Leading Candidate</a></li>
+                <li role="none"><a role="menuitem" href="../Account/account.html">Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <script>
+        // Automatically redirect to dashboard page
+        window.location.href = '../Dasboard for Student or user/index.html';
+    </script>
+    
+    <main class="content" role="main">
+        <div class="card">
+            <h1>Redirecting to Dashboard...</h1>
+            <p class="muted">Please wait while we redirect you to the dashboard.</p>
+        </div>
+    </main>
+
+    <footer class="content" role="contentinfo" style="color:var(--muted);">
+    </footer>
+
+    <script>
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
