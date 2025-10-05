@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Candidate Design</title>
+    <link rel="stylesheet" href="Dasboard for Student or user/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { margin: 20px; }
+        .demo-section { margin: 40px 0; }
+        .demo-title { color: #d32f2f; font-size: 24px; margin-bottom: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Candidate Design Test</h1>
+    
+    <div class="demo-section">
+        <h2 class="demo-title">Single Candidate (Before vs After)</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">This shows how a single candidate looks with the new design</p>
+        
+        <div class="position-group">
+            <h3 class="position-title">President</h3>
+            <div class="candidates-grid">
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>John Doe</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Male</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSIT</span>
+                            <span><i class="fas fa-calendar"></i> 3rd Year</span>
+                        </p>
+                        <p class="description">Vote for change and progress</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2 class="demo-title">Multiple Candidates</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">This shows how multiple candidates look with consistent sizing</p>
+        
+        <div class="position-group">
+            <h3 class="position-title">Vice President</h3>
+            <div class="candidates-grid">
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Jane Smith</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Female</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSN</span>
+                            <span><i class="fas fa-calendar"></i> 4th Year</span>
+                        </p>
+                        <p class="description">Leadership and innovation</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Mike Johnson</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Male</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSCS</span>
+                            <span><i class="fas fa-calendar"></i> 2nd Year</span>
+                        </p>
+                        <p class="description">Student voice matters</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Sarah Wilson</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Female</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSIT</span>
+                            <span><i class="fas fa-calendar"></i> 3rd Year</span>
+                        </p>
+                        <p class="description">Building bridges</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2 class="demo-title">Design Improvements</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef;">
+            <h4 style="color: #d32f2f; margin-bottom: 15px;">✅ What's Fixed:</h4>
+            <ul style="color: #666; line-height: 1.6;">
+                <li><strong>Consistent Card Size:</strong> All candidate cards now have the same maximum width (320px)</li>
+                <li><strong>Centered Layout:</strong> Cards are centered when there are fewer candidates</li>
+                <li><strong>No More Scrolling:</strong> Cards fit properly in the viewport</li>
+                <li><strong>Responsive Design:</strong> Works well on both desktop and mobile</li>
+                <li><strong>Better Spacing:</strong> Proper gaps between cards for better readability</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

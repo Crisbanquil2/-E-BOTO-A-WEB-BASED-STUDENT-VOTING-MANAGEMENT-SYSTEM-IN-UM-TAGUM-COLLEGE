@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Database - Simple Version</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #b71c1c; }
+        .loading { text-align: center; padding: 20px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Database Data</h1>
+        
+        <div class="section info">
+            <h2>What This Does</h2>
+            <p>This will add test candidates and students to your database to fix the voting system issues.</p>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Check Current Status</h2>
+            <button onclick="checkStatus()">Check Database Status</button>
+            <div id="statusResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Add Test Data</h2>
+            <button onclick="addTestData()">Add Test Candidates & Students</button>
+            <div id="addResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Test APIs</h2>
+            <button onclick="testAPIs()">Test Voting APIs</button>
+            <div id="testResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Quick Links</h2>
+            <button onclick="goToLogin()">🔐 Login Page</button>
+            <button onclick="goToVoting()">🗳️ Voting Page</button>
+            <button onclick="goToStatus()">📊 Voting Status</button>
+        </div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        async function checkStatus() {
+            showResult('statusResult', '<div class="loading">Checking database status...</div>');
+            
+            try {
+                // Check candidates
+                const candidatesResponse = await fetch('config/candidates_api.php?action=get_candidates');
+                const candidatesData = await candidatesResponse.json();
+                
+                // Check voting stats
+                const votingResponse = await fetch('config/voting_api.php?action=get_voting_stats');
+                const votingData = await votingResponse.json();
+                
+                let status = '<h3>Database Status:</h3>';
+                status += `<p><strong>Candidates:</strong> ${candidatesData.success ? candidatesData.total : 'Error'}</p>`;
+                status += `<p><strong>Total Votes:</strong> ${votingData.success ? votingData.stats.total_votes : 'Error'}</p>`;
+                status += `<p><strong>Total Students:</strong> ${votingData.success ? votingData.stats.total_voters : 'Error'}</p>`;
+                
+                if (candidatesData.success && candidatesData.total > 0) {
+                    status += '<p>✅ Candidates found - database looks good!</p>';
+                } else {
+                    status += '<p>❌ No candidates found - need to add test data</p>';
+                }
+                
+                showResult('statusResult', status, 'info');
+            } catch (error) {
+                showResult('statusResult', `Error checking status: ${error.message}`, 'error');
+            }
+        }
+
+        async function addTestData() {
+            showResult('addResult', '<div class="loading">Adding test data...</div>');
+            
+            try {
+                // This would normally call a PHP script to add data
+                // For now, we'll show instructions
+                const instructions = `
+                    <h3>Manual Database Fix Instructions:</h3>
+                    <ol>
+                        <li>Open your database management tool (phpMyAdmin, MySQL Workbench, etc.)</li>
+                        <li>Connect to your 'voting_system' database</li>
+                        <li>Run this SQL to add test candidates:</li>
+                    </ol>
+                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto;">
+INSERT INTO candidates (first_name, last_name, position, gender, course, year_level, description, photo, status, created_at) VALUES
+('John', 'Doe', 'President', 'Male', 'Computer Science', '3rd Year', 'Experienced leader', '', 'active', NOW()),
+('Jane', 'Smith', 'President', 'Female', 'Business Administration', '4th Year', 'Passionate leader', '', 'active', NOW()),
+('Mike', 'Johnson', 'Vice President', 'Male', 'Engineering', '3rd Year', 'Strong advocate', '', 'active', NOW()),
+('Sarah', 'Wilson', 'Vice President', 'Female', 'Education', '2nd Year', 'Committed leader', '', 'active', NOW()),
+('David', 'Brown', 'Secretary', 'Male', 'Psychology', '3rd Year', 'Organized person', '', 'active', NOW()),
+('Lisa', 'Davis', 'Secretary', 'Female', 'Communication', '4th Year', 'Excellent communicator', '', 'active', NOW());
+                    </pre>
+                    <ol start="4">
+                        <li>Run this SQL to add test students:</li>
+                    </ol>
+                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto;">
+INSERT INTO students (student_number, first_name, last_name, email, password, status, created_at) VALUES
+('2024001', 'Alice', 'Johnson', 'alice@email.com', 'password123', 'active', NOW()),
+('2024002', 'Bob', 'Smith', 'bob@email.com', 'password123', 'active', NOW()),
+('2024003', 'Carol', 'Davis', 'carol@email.com', 'password123', 'active', NOW());
+                    </pre>
+                    <p><strong>Or use the PHP version:</strong> <a href="fix_database_data.php" target="_blank">fix_database_data.php</a></p>
+                `;
+                
+                showResult('addResult', instructions, 'info');
+            } catch (error) {
+                showResult('addResult', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPIs() {
+            showResult('testResult', '<div class="loading">Testing APIs...</div>');
+            
+            try {
+                let results = [];
+                
+                // Test candidates API
+                try {
+                    const response = await fetch('config/candidates_api.php?action=get_candidates');
+                    const data = await response.json();
+                    if (data.success) {
+                        results.push(`✅ Candidates API: ${data.total} candidates found`);
+                    } else {
+                        results.push(`❌ Candidates API: ${data.message}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Candidates API: ${error.message}`);
+                }
+                
+                // Test voting API
+                try {
+                    const response = await fetch('config/voting_api.php?action=get_voting_stats');
+                    const data = await response.json();
+                    if (data.success) {
+                        results.push(`✅ Voting API: ${data.stats.total_votes} votes found`);
+                    } else {
+                        results.push(`❌ Voting API: ${data.message}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Voting API: ${error.message}`);
+                }
+                
+                // Test student votes API
+                try {
+                    const response = await fetch('config/voting_api.php?action=get_student_votes&studentId=1');
+                    const data = await response.json();
+                    if (data.success) {
+                        results.push(`✅ Student Votes API: ${data.votes.length} votes for student 1`);
+                    } else {
+                        results.push(`❌ Student Votes API: ${data.message}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Student Votes API: ${error.message}`);
+                }
+                
+                showResult('testResult', results.join('<br>'), 'info');
+            } catch (error) {
+                showResult('testResult', `Error testing APIs: ${error.message}`, 'error');
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = 'Login/login.html';
+        }
+
+        function goToVoting() {
+            window.location.href = 'Voting/voting.html';
+        }
+
+        function goToStatus() {
+            window.location.href = 'simple_voting_status.html';
+        }
+    </script>
+</body>
+</html>

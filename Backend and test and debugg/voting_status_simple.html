@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Status - Simple & Working</title>
+    <link rel="icon" href="../pictures/logo.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .student-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #d32f2f;
+        }
+        .status-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .status-card.voted {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .status-card.not-voted {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+        .vote-item {
+            background: #e8f5e8;
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .candidate-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #28a745;
+        }
+        .vote-details {
+            flex: 1;
+        }
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .position {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .vote-date {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .vote-status {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .no-votes {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #b71c1c;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ My Voting Status</h1>
+            <p>Simple and reliable voting history</p>
+        </div>
+
+        <div class="content">
+            <div class="student-info" id="studentInfo">
+                <i class="fas fa-user"></i> Loading student information...
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <h2>📊 Voting Summary</h2>
+            <div id="statusGrid">
+                <div class="loading">Loading voting status...</div>
+            </div>
+
+            <h2>📝 Your Voting History</h2>
+            <div id="votingHistory">
+                <div class="loading">Loading voting history...</div>
+            </div>
+
+            <div class="actions">
+                <a href="../Voting/voting.html" class="btn">🗳️ Go Vote</a>
+                <a href="../Dasboard for Student or user/index.html" class="btn">🏠 Dashboard</a>
+                <button onclick="loadData()" class="btn">🔄 Refresh</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStudent = null;
+        let studentVotes = [];
+        let allCandidates = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Simple Voting Status loaded');
+            checkStudentSession();
+        });
+
+        function checkStudentSession() {
+            console.log('Checking session...');
+            const sessionData = sessionStorage.getItem('svms_session') || localStorage.getItem('svms_session');
+            
+            if (!sessionData) {
+                showMessage('No login session found. Please login first.', 'error');
+                setTimeout(() => {
+                    window.location.href = '../Login/login.html';
+                }, 2000);
+                return;
+            }
+            
+            try {
+                currentStudent = JSON.parse(sessionData);
+                console.log('Student data:', currentStudent);
+                
+                if (!currentStudent.studentId) {
+                    showMessage('Invalid session data. Please login again.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '../Login/login.html';
+                    }, 2000);
+                    return;
+                }
+                
+                document.getElementById('studentInfo').innerHTML = 
+                    `<i class="fas fa-user"></i> <strong>${currentStudent.firstName} ${currentStudent.lastName}</strong><br>
+                     Student ID: ${currentStudent.studentId}`;
+                
+                loadData();
+            } catch (e) {
+                console.error('Session error:', e);
+                showMessage('Error reading session data. Please login again.', 'error');
+                setTimeout(() => {
+                    window.location.href = '../Login/login.html';
+                }, 2000);
+            }
+        }
+
+        async function loadData() {
+            console.log('Loading data...');
+            try {
+                await Promise.all([
+                    loadCandidates(),
+                    loadStudentVotes()
+                ]);
+                displayData();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage('Error loading data. Please try again.', 'error');
+            }
+        }
+
+        async function loadCandidates() {
+            try {
+                console.log('Loading candidates...');
+                const response = await fetch('../config/candidates_api.php?action=get_candidates');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allCandidates = data.candidates || [];
+                    console.log('Candidates loaded:', allCandidates.length);
+                } else {
+                    console.error('Candidates API error:', data.message);
+                    showMessage('Failed to load candidates: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Candidates loading error:', error);
+                showMessage('Error loading candidates. Please check your connection.', 'error');
+            }
+        }
+
+        async function loadStudentVotes() {
+            try {
+                console.log('Loading votes for student:', currentStudent.studentId);
+                const response = await fetch(`../config/voting_api.php?action=get_student_votes&studentId=${currentStudent.studentId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    studentVotes = data.votes || [];
+                    console.log('Votes loaded:', studentVotes.length);
+                } else {
+                    console.error('Votes API error:', data.message);
+                    studentVotes = [];
+                    if (data.message && !data.message.includes('No votes')) {
+                        showMessage('Failed to load votes: ' + data.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Votes loading error:', error);
+                studentVotes = [];
+                showMessage('Error loading voting history. Please check your connection.', 'error');
+            }
+        }
+
+        function displayData() {
+            displayStatusSummary();
+            displayVotingHistory();
+        }
+
+        function displayStatusSummary() {
+            const positions = [...new Set(allCandidates.map(c => c.position))];
+            const votedPositions = studentVotes.map(v => v.position);
+            
+            const statusGrid = document.getElementById('statusGrid');
+            
+            if (positions.length === 0) {
+                statusGrid.innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ No Positions Available</h3>
+                        <p>No candidate positions found in the system.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            statusGrid.innerHTML = positions.map(position => {
+                const hasVoted = votedPositions.includes(position);
+                const vote = studentVotes.find(v => v.position === position);
+                
+                // Safe access to vote data
+                const candidateName = vote && vote.first_name && vote.last_name ? 
+                    `${vote.first_name} ${vote.last_name}` : 
+                    (vote ? 'Unknown Candidate' : '');
+                
+                return `
+                    <div class="status-card ${hasVoted ? 'voted' : 'not-voted'}">
+                        <h3>${position}</h3>
+                        <p>${hasVoted ? `✅ Voted for ${candidateName}` : '⏳ Not voted yet'}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayVotingHistory() {
+            const historyContainer = document.getElementById('votingHistory');
+            
+            if (studentVotes.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="no-votes">
+                        <h3>📝 No Votes Yet</h3>
+                        <p>You haven't voted for any candidates yet.</p>
+                        <a href="../Voting/voting.html" class="btn">🗳️ Go Vote Now</a>
+                    </div>
+                `;
+                return;
+            }
+
+            historyContainer.innerHTML = studentVotes.map(vote => {
+                const voteDate = vote.voted_at ? new Date(vote.voted_at).toLocaleString() : 'Unknown date';
+                const candidateName = `${vote.first_name || 'Unknown'} ${vote.last_name || 'Candidate'}`;
+                const position = vote.position || 'Unknown Position';
+                const photo = vote.photo || '../pictures/logo.png';
+                
+                // Additional safety checks
+                if (!vote || (!vote.first_name && !vote.last_name)) {
+                    console.warn('Invalid vote data:', vote);
+                    return `
+                        <div class="vote-item">
+                            <img src="../pictures/logo.png" alt="Unknown" class="candidate-photo">
+                            <div class="vote-details">
+                                <div class="candidate-name">Invalid Vote Data</div>
+                                <div class="position">${position}</div>
+                                <div class="vote-date">Voted on ${voteDate}</div>
+                            </div>
+                            <div class="vote-status">
+                                <i class="fas fa-exclamation-triangle"></i> Error
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="vote-item">
+                        <img src="${photo}" alt="${candidateName}" class="candidate-photo" onerror="this.src='../pictures/logo.png'">
+                        <div class="vote-details">
+                            <div class="candidate-name">${candidateName}</div>
+                            <div class="position">${position}</div>
+                            <div class="vote-date">Voted on ${voteDate}</div>
+                        </div>
+                        <div class="vote-status">
+                            <i class="fas fa-check"></i> Voted
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

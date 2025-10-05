@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access - Student Voting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .access-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #d32f2f;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #b71c1c;
+        }
+        .btn.student {
+            background: #2563eb;
+        }
+        .btn.student:hover {
+            background: #1d4ed8;
+        }
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .info h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .info p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 System Access Portal</h1>
+        <p>Choose your access level:</p>
+        
+        <div class="access-buttons">
+            <a href="Admin/Admin login/Adminlogin.html" class="btn">
+                <i class="fas fa-user-shield"></i> Admin Login
+            </a>
+            <a href="Dasboard for Student or user/index.html" class="btn student">
+                <i class="fas fa-user-graduate"></i> Student Dashboard
+            </a>
+            <a href="Login/login.html" class="btn student">
+                <i class="fas fa-sign-in-alt"></i> Student Login
+            </a>
+        </div>
+        
+        <div class="info">
+            <h3>📋 Quick Access Info:</h3>
+            <p><strong>Admin Credentials:</strong> admin / admin123</p>
+            <p><strong>Admin Panel:</strong> Manage candidates, voters, and view results</p>
+            <p><strong>Student Panel:</strong> Vote for candidates and check status</p>
+        </div>
+    </div>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</body>
+</html>

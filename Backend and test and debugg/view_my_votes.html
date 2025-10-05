@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View My Votes - Direct Link</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #b71c1c;
+        }
+        .btn.secondary {
+            background: #6c757d;
+        }
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+        h1 {
+            color: #d32f2f;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .instructions {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .instructions ol {
+            color: #666;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗳️ View My Voting Status</h1>
+        <p>Choose how you want to view your voting status and history:</p>
+
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li><strong>PHP Version (Recommended):</strong> Works directly with database, no JavaScript issues</li>
+                <li><strong>Simple HTML Version:</strong> Uses JavaScript but with better error handling</li>
+                <li><strong>Original Version:</strong> Your current voting status page</li>
+            </ol>
+        </div>
+
+        <a href="my_voting_status.php" class="btn">
+            🔧 PHP Version (Most Reliable)
+        </a>
+
+        <a href="voting_status_simple.html" class="btn">
+            📱 Simple HTML Version
+        </a>
+
+        <a href="Voting Status/voting_status_working.html" class="btn">
+            🎨 Enhanced Version
+        </a>
+
+        <a href="Voting Status/voting_status.html" class="btn secondary">
+            📄 Original Version
+        </a>
+
+        <div style="margin-top: 30px;">
+            <a href="Voting/voting.html" class="btn secondary">🗳️ Go Vote</a>
+            <a href="Dasboard for Student or user/index.html" class="btn secondary">🏠 Dashboard</a>
+        </div>
+
+        <div class="instructions">
+            <h3>🔍 If Still Not Working:</h3>
+            <ol>
+                <li>Make sure you're logged in with a valid student account</li>
+                <li>Check if you have actually voted (go to Voting page first)</li>
+                <li>Try the PHP version first - it bypasses JavaScript issues</li>
+                <li>Check your browser console (F12) for any error messages</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect student session and redirect to PHP version
+        document.addEventListener('DOMContentLoaded', function() {
+            const sessionData = sessionStorage.getItem('svms_session') || localStorage.getItem('svms_session');
+            
+            if (sessionData) {
+                try {
+                    const student = JSON.parse(sessionData);
+                    if (student.studentId) {
+                        console.log('Student session found:', student);
+                        // Add a note that session was detected
+                        const container = document.querySelector('.container');
+                        const note = document.createElement('div');
+                        note.innerHTML = `
+                            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                                ✅ <strong>Session Detected:</strong> ${student.firstName} ${student.lastName} (${student.studentId})
+                            </div>
+                        `;
+                        container.insertBefore(note, container.querySelector('p'));
+                    }
+                } catch (e) {
+                    console.error('Error parsing session:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Voting Status Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Voting Status Debug Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test Instructions</h3>
+        <p>This page will help debug your voting status issue. Click the buttons below to test different parts of the system.</p>
+    </div>
+
+    <div class="test-section">
+        <h3>1. Test Database Connection</h3>
+        <button onclick="testDatabaseConnection()">Test Database</button>
+        <div id="dbResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Test Candidates API</h3>
+        <button onclick="testCandidatesAPI()">Test Candidates</button>
+        <div id="candidatesResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Test Voting API</h3>
+        <input type="text" id="studentId" placeholder="Enter Student ID" style="padding: 5px; margin: 5px;">
+        <button onclick="testVotingAPI()">Test Student Votes</button>
+        <div id="votingResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Test Session Data</h3>
+        <button onclick="testSessionData()">Check Session</button>
+        <div id="sessionResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Quick Fix Test</h3>
+        <button onclick="quickFixTest()">Run Quick Fix</button>
+        <div id="quickFixResult"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}"><pre>${message}</pre></div>`;
+        }
+
+        async function testDatabaseConnection() {
+            try {
+                const response = await fetch('config/database.php');
+                const text = await response.text();
+                showResult('dbResult', 'Database connection test completed. Response: ' + text.substring(0, 200) + '...', 'success');
+            } catch (error) {
+                showResult('dbResult', 'Database connection failed: ' + error.message, 'error');
+            }
+        }
+
+        async function testCandidatesAPI() {
+            try {
+                const response = await fetch('config/candidates_api.php?action=get_candidates');
+                const data = await response.json();
+                showResult('candidatesResult', 'Candidates API Response:\n' + JSON.stringify(data, null, 2), data.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('candidatesResult', 'Candidates API failed: ' + error.message, 'error');
+            }
+        }
+
+        async function testVotingAPI() {
+            const studentId = document.getElementById('studentId').value;
+            if (!studentId) {
+                showResult('votingResult', 'Please enter a student ID first', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`config/voting_api.php?action=get_student_votes&studentId=${studentId}`);
+                const data = await response.json();
+                showResult('votingResult', `Voting API Response for Student ${studentId}:\n` + JSON.stringify(data, null, 2), data.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('votingResult', 'Voting API failed: ' + error.message, 'error');
+            }
+        }
+
+        function testSessionData() {
+            const sessionData = sessionStorage.getItem('svms_session') || localStorage.getItem('svms_session');
+            if (sessionData) {
+                try {
+                    const parsed = JSON.parse(sessionData);
+                    showResult('sessionResult', 'Session data found:\n' + JSON.stringify(parsed, null, 2), 'success');
+                } catch (e) {
+                    showResult('sessionResult', 'Session data found but invalid JSON:\n' + sessionData, 'error');
+                }
+            } else {
+                showResult('sessionResult', 'No session data found. Please login first.', 'error');
+            }
+        }
+
+        async function quickFixTest() {
+            let results = [];
+            
+            // Test 1: Check if voting status page exists
+            try {
+                const response = await fetch('Voting Status/voting_status.html');
+                results.push('✅ Voting status page exists');
+            } catch (error) {
+                results.push('❌ Voting status page not found: ' + error.message);
+            }
+
+            // Test 2: Check candidates API
+            try {
+                const response = await fetch('config/candidates_api.php?action=get_candidates');
+                const data = await response.json();
+                if (data.success) {
+                    results.push(`✅ Candidates API working (${data.total} candidates found)`);
+                } else {
+                    results.push('❌ Candidates API failed: ' + data.message);
+                }
+            } catch (error) {
+                results.push('❌ Candidates API error: ' + error.message);
+            }
+
+            // Test 3: Check voting API
+            try {
+                const response = await fetch('config/voting_api.php?action=get_voting_stats');
+                const data = await response.json();
+                if (data.success) {
+                    results.push(`✅ Voting API working (${data.stats.total_votes} total votes)`);
+                } else {
+                    results.push('❌ Voting API failed: ' + data.message);
+                }
+            } catch (error) {
+                results.push('❌ Voting API error: ' + error.message);
+            }
+
+            showResult('quickFixResult', results.join('\n'), 'info');
+        }
+    </script>
+</body>
+</html>

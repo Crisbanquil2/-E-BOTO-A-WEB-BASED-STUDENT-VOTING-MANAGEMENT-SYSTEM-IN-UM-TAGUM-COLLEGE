@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Candidates</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #e8f5e8; border-color: #4caf50; }
+        .error { background: #ffebee; border-color: #f44336; }
+        .info { background: #e3f2fd; border-color: #2196f3; }
+        button { padding: 10px 20px; margin: 5px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .candidate-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; background: #fafafa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Candidates API</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Direct API Call</h3>
+            <button onclick="testDirectAPI()">Test API</button>
+            <div id="apiResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 2: Database Check</h3>
+            <button onclick="testDatabase()">Check Database</button>
+            <div id="dbResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 3: Add Sample Data</h3>
+            <button onclick="addSampleData()">Add Sample Candidates</button>
+            <div id="sampleResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 4: Admin Page Path</h3>
+            <button onclick="testAdminPath()">Test Admin Path</button>
+            <div id="adminResult"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testDirectAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '<div class="info">Testing API...</div>';
+            
+            try {
+                const response = await fetch('config/ultra_simple_api.php?action=get_candidates');
+                console.log('API Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('API Data:', data);
+                
+                if (data.success) {
+                    const positionCount = Object.keys(data.data).length;
+                    let totalCandidates = 0;
+                    for (const position of Object.values(data.data)) {
+                        totalCandidates += position.length;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ API Working!</h4>
+                            <p><strong>Positions:</strong> ${positionCount}</p>
+                            <p><strong>Total Candidates:</strong> ${totalCandidates}</p>
+                            <details>
+                                <summary>View Raw Data</summary>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ API Error</h4>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error</h4>
+                        <p>${error.message}</p>
+                        <p>Check if the server is running and the path is correct.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testDatabase() {
+            const resultDiv = document.getElementById('dbResult');
+            resultDiv.innerHTML = '<div class="info">Checking database...</div>';
+            
+            try {
+                const response = await fetch('config/check_candidates.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Database Connected!</h4>
+                            <p><strong>Candidates in database:</strong> ${data.count}</p>
+                            ${data.candidates && data.candidates.length > 0 ? `
+                                <h5>Sample Candidates:</h5>
+                                ${data.candidates.slice(0, 3).map(c => `
+                                    <div class="candidate-card">
+                                        <strong>${c.first_name} ${c.last_name}</strong> - ${c.position}<br>
+                                        <small>${c.gender} | ${c.course} | ${c.year_level}</small>
+                                    </div>
+                                `).join('')}
+                            ` : '<p>No candidates found in database.</p>'}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Database Error</h4>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Database Connection Error</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function addSampleData() {
+            const resultDiv = document.getElementById('sampleResult');
+            resultDiv.innerHTML = '<div class="info">Adding sample data...</div>';
+            
+            try {
+                const response = await fetch('config/add_sample_candidates.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Sample Data Added!</h4>
+                            <p>${data.message}</p>
+                            <p><strong>Added:</strong> ${data.count} candidates</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error Adding Sample Data</h4>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Error</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testAdminPath() {
+            const resultDiv = document.getElementById('adminResult');
+            resultDiv.innerHTML = '<div class="info">Testing admin page path...</div>';
+            
+            try {
+                // Test the exact path used in admin page
+                const response = await fetch('../../config/ultra_simple_api.php?action=get_candidates');
+                console.log('Admin Path Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Admin Path Data:', data);
+                
+                if (data.success) {
+                    const positionCount = Object.keys(data.data).length;
+                    let totalCandidates = 0;
+                    for (const position of Object.values(data.data)) {
+                        totalCandidates += position.length;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Admin Path Working!</h4>
+                            <p><strong>Positions:</strong> ${positionCount}</p>
+                            <p><strong>Total Candidates:</strong> ${totalCandidates}</p>
+                            <p>This is the path used by the admin page.</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Admin Path Error</h4>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Admin Path Network Error</h4>
+                        <p>${error.message}</p>
+                        <p>The admin page might not be able to load candidates due to this path issue.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Voting Test</title>
+</head>
+<body>
+    <h1>Simple Voting Test</h1>
+    
+    <button onclick="testAPI()">Test Voting API</button>
+    <button onclick="testDebugAPI()">Test Debug API</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing voting API...';
+            
+            try {
+                // Test GET request first
+                const response = await fetch('config/voting_api.php?action=get_voting_stats');
+                const text = await response.text();
+                resultDiv.innerHTML = '<h3>GET Response:</h3><pre>' + text + '</pre>';
+                
+                // Test POST request
+                const postData = {
+                    studentId: '2024-001',
+                    candidateId: '1',
+                    position: 'President'
+                };
+                
+                const postResponse = await fetch('config/voting_api.php?action=submit_vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(postData)
+                });
+                
+                const postText = await postResponse.text();
+                resultDiv.innerHTML += '<h3>POST Response:</h3><pre>' + postText + '</pre>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testDebugAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing debug API...';
+            
+            try {
+                const response = await fetch('config/debug_voting_api.php?action=submit_vote');
+                const text = await response.text();
+                resultDiv.innerHTML = '<h3>Debug API Response:</h3><pre>' + text + '</pre>';
+            } catch (error) {
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
