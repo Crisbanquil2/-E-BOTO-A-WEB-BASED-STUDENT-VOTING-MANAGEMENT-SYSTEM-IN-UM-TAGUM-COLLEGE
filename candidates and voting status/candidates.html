@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Candidates</title>
+    <meta name="color-scheme" content="light only">
+    <link rel="stylesheet" href="dashboard.css?v=6">
+    <link rel="icon" href="data:,">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap{max-width:1100px;margin:24px auto;padding:0 16px;}
+        .filter-bar{display:flex;gap:12px;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;}
+        .filter-bar input{flex:1;height:42px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px;background:#f3f4f6;color:#111827;}
+        .filter-bar input::placeholder{color:#6b7280;}
+        .filter-bar select{height:42px;border:1px solid #e5e7eb;border-radius:10px;padding:0 10px;}
+        .positions{display:flex;flex-direction:column;gap:20px;margin-top:18px;}
+        .position-group{margin:0;display:block;border:none;padding:0;}
+        .position-title{display:inline-block;background:#d32f2f;border:2px solid #d32f2f;color:#ffffff;border-radius:20px;padding:8px 16px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;min-width:unset;max-width:unset;word-break:normal;}
+        
+        /* Override candidate details text color to black */
+        .candidate-details span {
+            color: #d00606 !important;
+        }
+        
+        .description {
+            color: #ea0101 !important;
+        }
+        
+        /* Notification Icon and Dropdown Styles */
+        .notification-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .notification-icon {
+            color: #ffffff !important;
+            font-size: 20px !important;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: transparent !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+        
+        .notification-icon i {
+            color: #ffffff !important;
+            font-size: 20px !important;
+            display: inline-block !important;
+            visibility: visible !important;
+        }
+        
+        .fallback-icon {
+            color: #ffffff !important;
+            font-size: 18px !important;
+            display: none !important;
+        }
+        
+        .text-fallback {
+            color: #ffffff !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            display: none !important;
+        }
+        
+        .notification-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .notification-icon::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #ff4444;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            display: none;
+        }
+        
+        .notification-icon.has-notifications::after {
+            display: block;
+        }
+        
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 350px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            margin-top: 8px;
+        }
+        
+        .notification-dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notification-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .notification-header h3 {
+            margin: 0;
+            color: #111827;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .notification-count {
+            background: #d32f2f;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-item i {
+            color: #d32f2f;
+            font-size: 16px;
+            margin-right: 12px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-content p {
+            margin: 0 0 4px 0;
+            color: #111827;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .notification-time {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .notification-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .notification-footer button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .notification-footer button:hover {
+            background: #b71c1c;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                width: 300px;
+                right: -50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Main navigation">
+            <div class="navbar-logo">
+                <img src="../pictures/UM-TAGUM (1).png" alt="UM College Logo" class="navbar-logo-img">
+                <span class="brand-title">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+                <li role="none"><a class="active" role="menuitem" href="candidates.html">Candidates</a></li>
+                <li role="none"><a role="menuitem" href="../Voting Status/voting_status_working.html">Voting Status</a></li>
+                <li role="none" class="notification-container">
+                    <span class="notification-icon" onclick="toggleNotifications()" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="fallback-icon" style="display: none; font-size: 18px;">🔔</span>
+                        <span class="text-fallback" style="display: none; font-size: 16px; font-weight: bold;">NOTIF</span>
+                    </span>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <span class="notification-count" id="notificationCount">0</span>
+                        </div>
+                        <div class="notification-list" id="notificationList"></div>
+                        <div class="notification-footer">
+                            <button onclick="markAllAsRead()">Mark all as read</button>
+                        </div>
+                    </div>
+                </li>
+                <li role="none"><a role="menuitem" href="../Account/account.html">Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-wrap">
+        <div class="filter-bar">
+            <input id="candidateSearch" type="text" placeholder="Search by first name or last name..." oninput="filterCandidates()">
+            <select id="positionFilter" onchange="filterCandidates()">
+                <option value="">All Positions</option>
+                <option value="President">President</option>
+                <option value="Vice President">Vice President</option>
+                <option value="Mayor">Mayor</option>
+                <option value="Vice Mayor">Vice Mayor</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Treasurer">Treasurer</option>
+                <option value="Auditor">Auditor</option>
+                <option value="P.I.O.">P.I.O.</option>
+            </select>
+        </div>
+
+        <div id="positionsContainer" class="positions"></div>
+    </main>
+
+    <script>
+        let candidates = {};
+        const API_BASE = '/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/simple_api_v2.php';
+        document.addEventListener('DOMContentLoaded', () => { loadCandidates(); });
+
+        async function loadCandidates(){
+            try{
+                const res = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/simple_api_v2.php?action=get_candidates&v=' + Date.now());
+                const json = await res.json();
+                if(json.success){
+                    candidates = json.data || {};
+                    renderPositions(candidates);
+                }else{
+                    document.getElementById('positionsContainer').innerHTML = '<div class="no-candidates">No candidates available.</div>';
+                }
+            }catch(e){
+                document.getElementById('positionsContainer').innerHTML = '<div class="no-candidates">Failed to load candidates.</div>';
+            }
+        }
+
+        function renderPositions(data){
+            const wrap = document.getElementById('positionsContainer');
+            const positionOrder = ['President','Vice President','Mayor','Vice Mayor','Secretary','Treasurer','Auditor','Public Information Officer (PIO)','Business Manager','Peace Officer','P.I.O.'];
+            const ordered = Object.entries(data).sort((a,b)=>{
+                const ia = positionOrder.indexOf(a[0]);
+                const ib = positionOrder.indexOf(b[0]);
+                if(ia === -1 && ib === -1) return a[0].localeCompare(b[0]);
+                if(ia === -1) return 1; if(ib === -1) return -1; return ia-ib;
+            });
+
+            let html = '';
+            ordered.forEach(([position, arr])=>{
+                html += `<div class="position-group">
+                    <span class="position-title" title="${position}">${position}</span>
+                    <div class="candidates-grid">${arr.map(c=>candidateCard(c, position)).join('')}</div>
+                </div>`;
+            });
+            wrap.innerHTML = html;
+        }
+
+        function candidateCard(c, position){
+            return `<div class="candidate-card" data-candidate-id="${c.candidate_id}" data-position="${position}">
+                <div class="card-header">
+                    <div class="avatar-wrap">${c.photo ? `<img src="${c.photo}" alt="${c.first_name} ${c.last_name}">` : `<div class=\"no-photo\"><i class=\"fas fa-user\"></i></div>`}</div>
+                </div>
+                <div class="card-body">
+                    <div class="candidate-info"><h4>${c.first_name} ${c.last_name}</h4></div>
+                    <div class="candidate-details">
+                        <span><i class="fas fa-venus-mars"></i> ${c.gender||''}</span>
+                        <span><i class="fas fa-graduation-cap"></i> ${c.course||''}</span>
+                        <span><i class="fas fa-calendar"></i> ${c.year_level||''}</span>
+                    </div>
+                    ${c.description ? `<p class=\"description\">${c.description}</p>` : ''}
+                    <button class=\"vote-btn\" onclick=\"submitVote(${c.candidate_id}, '${position.replace(/'/g, "\\'")}')\"><i class=\"fas fa-vote-yea\"></i> Vote</button>
+                </div>
+            </div>`;
+        }
+
+        function filterCandidates(){
+            const q = document.getElementById('candidateSearch').value.toLowerCase();
+            const pos = document.getElementById('positionFilter').value;
+            const filtered = {};
+            for(const [position, arr] of Object.entries(candidates)){
+                if(pos && pos !== position) continue;
+                const rows = arr.filter(c=>{
+                    const full = `${c.first_name} ${c.last_name}`.toLowerCase();
+                    return !q || full.includes(q);
+                });
+                if(rows.length) filtered[position] = rows;
+            }
+            renderPositions(filtered);
+        }
+
+        async function submitVote(candidateId, position){
+            try{
+                // Find the clicked card button and disable
+                const btn = event && event.currentTarget ? event.currentTarget : null;
+                if(btn){ btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+                // Confirm with user
+                const confirmVote = window.confirm('Confirm your vote for ' + position + '?');
+                if(!confirmVote){
+                    if(btn){ btn.disabled = false; btn.textContent = 'Vote'; }
+                    return;
+                }
+
+                // Get student session if available
+                let studentId = null;
+                try{
+                    const sess = sessionStorage.getItem('svms_session') || localStorage.getItem('svms_session');
+                    if(sess){ const s = JSON.parse(sess); studentId = s && (s.studentId || s.id || s.student_id); }
+                }catch(e){}
+
+                if(!studentId){
+                    alert('No student session found. Please login again.');
+                    if(btn){ btn.disabled = false; btn.textContent = 'Vote'; }
+                    return;
+                }
+
+                const res = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'submit_vote', student_id: studentId, candidate_id: candidateId, position: position })
+                });
+                const json = await res.json();
+                if(json && json.success){
+                    alert('Vote submitted successfully!');
+                } else {
+                    alert('Vote failed: ' + (json && json.message ? json.message : 'Unknown error'));
+                    if(btn){ btn.disabled = false; btn.textContent = 'Vote'; }
+                }
+            }catch(e){
+                alert('Error submitting vote: ' + e.message);
+                const btn = event && event.currentTarget ? event.currentTarget : null;
+                if(btn){ btn.disabled = false; btn.textContent = 'Vote'; }
+            }
+        }
+
+        // Notification Functions (same as voting status page)
+        const NOTIF_KEY = 'svms_notifications';
+        const NOTIF_READ_KEY = 'svms_notifications_read_at';
+        
+        function getAllNotifs(){
+            try { 
+                let notifs = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]');
+                // If no notifications exist, create some sample ones
+                if (notifs.length === 0) {
+                    notifs = [
+                        {
+                            title: "Voting is now open!",
+                            body: "Voting is now open for all positions! Please cast your votes before the deadline.",
+                            created_at: Date.now() - 2 * 60 * 60 * 1000 // 2 hours ago
+                        },
+                        {
+                            title: "Important Reminder",
+                            body: "Remember to vote for all positions before the deadline. Your vote matters!",
+                            created_at: Date.now() - 24 * 60 * 60 * 1000 // 1 day ago
+                        },
+                        {
+                            title: "Election Results",
+                            body: "Election results will be announced tomorrow. Stay tuned for updates!",
+                            created_at: Date.now() - 2 * 24 * 60 * 60 * 1000 // 2 days ago
+                        }
+                    ];
+                    localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs));
+                }
+                return notifs;
+            } catch(e){ 
+                return []; 
+            }
+        }
+        
+        function getReadAt(){
+            return Number(localStorage.getItem(NOTIF_READ_KEY) || 0);
+        }
+        
+        function setReadNow(){
+            localStorage.setItem(NOTIF_READ_KEY, String(Date.now()));
+        }
+        
+        function countUnread(notifs){
+            const readAt = getReadAt();
+            return (notifs||[]).filter(n => Number(n.created_at||0) > readAt).length;
+        }
+        
+        function timeAgo(ts){
+            const diff = Date.now() - Number(ts||0);
+            const mins = Math.floor(diff/60000);
+            if(mins<60) return mins<=1? '1 min ago' : mins+' mins ago';
+            const hrs = Math.floor(mins/60);
+            if(hrs<24) return hrs===1? '1 hour ago' : hrs+' hours ago';
+            const days = Math.floor(hrs/24);
+            return days===1? '1 day ago' : days+' days ago';
+        }
+        
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (!dropdown) {
+                return;
+            }
+            
+            const isVisible = dropdown.classList.contains('show');
+            
+            if (isVisible) {
+                dropdown.classList.remove('show');
+            } else {
+                dropdown.classList.add('show');
+                renderNotificationItems();
+            }
+        }
+
+        function updateNotificationCount() {
+            const notifs = getAllNotifs();
+            const unread = countUnread(notifs);
+            
+            const countElement = document.getElementById('notificationCount');
+            const icon = document.querySelector('.notification-icon');
+            
+            if (countElement) {
+                countElement.textContent = unread;
+            }
+            
+            if (icon) {
+                if (unread > 0) {
+                    icon.classList.add('has-notifications');
+                } else {
+                    icon.classList.remove('has-notifications');
+                }
+            }
+        }
+        
+        function renderNotificationItems() {
+            const list = getAllNotifs();
+            const container = document.getElementById('notificationList');
+            if (!container) {
+                return;
+            }
+            
+            if (!list.length) {
+                container.innerHTML = '<div style="padding:16px;color:#6b7280;">No notifications</div>';
+                return;
+            }
+            
+            container.innerHTML = list.map(n => {
+                const icon = '<i class="fas fa-info-circle" style="color:#ef4444;"></i>';
+                return `<div class="notification-item" style="padding:14px 16px; display:flex; gap:10px; border-top:1px solid #f3f4f6;">
+                    <div style="width:20px; text-align:center;">${icon}</div>
+                    <div style="flex:1;">
+                        <div style="color:#111827; font-weight:600;">${(n.title||'').replace(/</g,'&lt;')}</div>
+                        <div style="color:#374151; margin-top:4px;">${(n.body||'').replace(/</g,'&lt;')}</div>
+                        <div style="color:#6b7280; font-size:12px; margin-top:6px;">${timeAgo(n.created_at)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            updateNotificationCount();
+        }
+
+        function markAllAsRead() {
+            setReadNow();
+            updateNotificationCount();
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+        }
+
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const notificationContainer = document.querySelector('.notification-container');
+            const dropdown = document.getElementById('notificationDropdown');
+            
+            if (!notificationContainer.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Initialize notification count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderNotifications();
+            
+            // Check if Font Awesome loaded, show fallback if not
+            setTimeout(function() {
+                const bellIcon = document.querySelector('.notification-icon i.fa-bell');
+                const fallbackIcon = document.querySelector('.fallback-icon');
+                const textFallback = document.querySelector('.text-fallback');
+                
+                // Check if the bell icon is visible
+                if (bellIcon) {
+                    const computedStyle = getComputedStyle(bellIcon);
+                    const isVisible = computedStyle.display !== 'none' && 
+                                    computedStyle.visibility !== 'hidden' && 
+                                    computedStyle.opacity !== '0';
+                    
+                    if (!isVisible || computedStyle.fontFamily.indexOf('Font Awesome') === -1) {
+                        // Font Awesome didn't load or icon is not visible, show fallback
+                        if (fallbackIcon) {
+                            fallbackIcon.style.display = 'inline-block';
+                            bellIcon.style.display = 'none';
+                        } else if (textFallback) {
+                            textFallback.style.display = 'inline-block';
+                            bellIcon.style.display = 'none';
+                        }
+                    }
+                }
+            }, 1000);
+        });
+
+        // Live update when admin updates notifications
+        window.addEventListener('storage', function(e){ if(e.key === ADMIN_NOTIF_KEY){ renderNotifications(); } });
+    </script>
+    <script>
+        // Simple theme bootstrap: read and apply data-theme from localStorage
+        (function(){
+            try {
+                var theme = localStorage.getItem('svms_theme');
+                if(theme){ document.documentElement.setAttribute('data-theme', theme); }
+                // Listen for cross-page theme changes
+                window.addEventListener('storage', function(e){
+                    if(e.key === 'svms_theme'){ document.documentElement.setAttribute('data-theme', e.newValue || ''); }
+                });
+                
+                // Initialize notification count on page load
+                updateNotificationCount();
+            } catch(e) {}
+        })();
+    </script>
+</body>
+</html>
+
+
