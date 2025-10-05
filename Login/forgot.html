@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="forgot.css">
+    <meta name="color-scheme" content="light only">
+</head>
+<body>
+    <div class="forgot-wrapper">
+        <div class="card">
+            <h1>Forgot Password</h1>
+            <p class="subtitle">Enter your school email to receive a reset link.</p>
+            <form id="forgotForm">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="name@example.com" required>
+                <button type="submit" class="btn">Send Reset Link</button>
+                <a class="back" href="login.html">Back to Login</a>
+                <div id="msg" class="msg" role="status"></div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('forgotForm');
+        const emailEl = document.getElementById('email');
+        const msg = document.getElementById('msg');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailEl.value.trim();
+            if (!email) { msg.textContent = 'Please enter your email.'; return; }
+            try {
+                // If you add a backend later, call it here.
+                // For now, just show success to guide the user.
+                msg.textContent = 'If this email exists, a reset link was sent.';
+            } catch (e) {
+                msg.textContent = 'Something went wrong. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
