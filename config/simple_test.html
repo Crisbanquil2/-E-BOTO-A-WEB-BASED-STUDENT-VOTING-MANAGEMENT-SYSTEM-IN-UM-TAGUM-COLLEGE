@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { background: #f0f0f0; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h2>PHP Test</h2>
+    
+    <div class="test">
+        <h3>Test 1: Basic PHP</h3>
+        <p>If you see "PHP is working!" below, PHP is working:</p>
+        <div id="php-test">Loading...</div>
+    </div>
+    
+    <div class="test">
+        <h3>Test 2: API Test</h3>
+        <p>Testing the API:</p>
+        <div id="api-test">Loading...</div>
+    </div>
+    
+    <div class="test">
+        <h3>Test 3: Database Test</h3>
+        <p>Testing database connection:</p>
+        <div id="db-test">Loading...</div>
+    </div>
+    
+    <script>
+        // Test 1: Basic PHP
+        fetch('test.php')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('php-test').innerHTML = data;
+                if (data.includes('PHP is working')) {
+                    document.getElementById('php-test').className = 'success';
+                } else {
+                    document.getElementById('php-test').className = 'error';
+                }
+            })
+            .catch(error => {
+                document.getElementById('php-test').innerHTML = 'Error: ' + error.message;
+                document.getElementById('php-test').className = 'error';
+            });
+        
+        // Test 2: API Test
+        fetch('ultra_simple_api.php?action=get_candidates')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('api-test').innerHTML = data;
+                try {
+                    const json = JSON.parse(data);
+                    if (json.success) {
+                        document.getElementById('api-test').className = 'success';
+                    } else {
+                        document.getElementById('api-test').className = 'error';
+                    }
+                } catch (e) {
+                    document.getElementById('api-test').className = 'error';
+                }
+            })
+            .catch(error => {
+                document.getElementById('api-test').innerHTML = 'Error: ' + error.message;
+                document.getElementById('api-test').className = 'error';
+            });
+        
+        // Test 3: Database Test
+        fetch('debug_api_error.php')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('db-test').innerHTML = data.substring(0, 200) + '...';
+                if (data.includes('Database connection successful')) {
+                    document.getElementById('db-test').className = 'success';
+                } else {
+                    document.getElementById('db-test').className = 'error';
+                }
+            })
+            .catch(error => {
+                document.getElementById('db-test').innerHTML = 'Error: ' + error.message;
+                document.getElementById('db-test').className = 'error';
+            });
+    </script>
+</body>
+</html>

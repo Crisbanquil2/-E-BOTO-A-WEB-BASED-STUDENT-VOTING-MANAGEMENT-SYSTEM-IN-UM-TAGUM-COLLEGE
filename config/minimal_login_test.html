@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Login Test</title>
+</head>
+<body>
+    <h1>Minimal Login Test</h1>
+    
+    <form id="loginForm">
+        <input type="text" id="studentId" value="TEST001" placeholder="Student ID">
+        <input type="password" id="password" value="password123" placeholder="Password">
+        <button type="submit">Test Login</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Sending:', { studentId, password });
+            
+            try {
+                const response = await fetch('login_api.php?action=login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        studentId: studentId,
+                        password: password
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                document.getElementById('result').innerHTML = 
+                    '<h3>' + (data.success ? 'SUCCESS' : 'FAILED') + '</h3>' +
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 
+                    '<h3>ERROR</h3><p>' + error.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>

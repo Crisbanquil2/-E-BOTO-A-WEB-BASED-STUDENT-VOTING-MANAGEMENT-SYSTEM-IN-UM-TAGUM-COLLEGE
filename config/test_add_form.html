@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Add Candidate Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #d32f2f; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #b71c1c; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h2>Test Add Candidate Form</h2>
+    
+    <form id="testForm">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="position">Position:</label>
+            <select id="position" name="position" required>
+                <option value="">Select Position</option>
+                <option value="President">President</option>
+                <option value="Vice President">Vice President</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Treasurer">Treasurer</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="course">Course:</label>
+            <select id="course" name="course" required>
+                <option value="">Select Course</option>
+                <option value="BSIT">BSIT</option>
+                <option value="BSCS">BSCS</option>
+                <option value="BSN">BSN</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="year">Year Level:</label>
+            <select id="year" name="year" required>
+                <option value="">Select Year</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="3"></textarea>
+        </div>
+        
+        <button type="submit">Add Candidate</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const candidate = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                position: formData.get('position'),
+                gender: formData.get('gender'),
+                course: formData.get('course'),
+                year_level: formData.get('year'),
+                description: formData.get('description') || '',
+                photo: null
+            };
+            
+            console.log('Sending candidate data:', candidate);
+            
+            try {
+                const response = await fetch('simple_candidates_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'add_candidate',
+                        data: candidate
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                const resultDiv = document.getElementById('result');
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>Success!</h3>
+                            <p>Candidate added successfully with ID: ${result.candidate_id}</p>
+                            <p>Response: ${JSON.stringify(result, null, 2)}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>Error!</h3>
+                            <p>${result.message}</p>
+                            <p>Response: ${JSON.stringify(result, null, 2)}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        <h3>Network Error!</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
