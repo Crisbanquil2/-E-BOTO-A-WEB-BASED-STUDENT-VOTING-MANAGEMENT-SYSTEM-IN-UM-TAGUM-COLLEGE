@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Position Voting</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; color: #856404; }
+        .candidate-card { border: 1px solid #ddd; margin: 10px; padding: 15px; display: inline-block; width: 200px; }
+        .candidate-card.voted { background: #d4edda; border-color: #28a745; }
+        .vote-btn { padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .vote-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        .vote-btn.voted { background: #28a745; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Debug Position Voting</h1>
+    
+    <div class="debug-section">
+        <h3>Step 1: Check Available Positions</h3>
+        <button onclick="checkPositions()">Check Positions</button>
+        <div id="positionsResult" class="result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Step 2: Check Current Votes</h3>
+        <button onclick="checkCurrentVotes()">Check Current Votes</button>
+        <div id="votesResult" class="result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Step 3: Test Voting for Each Position</h3>
+        <div id="candidatesContainer"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Step 4: Debug Vote Status Check</h3>
+        <button onclick="debugVoteStatus()">Debug Vote Status Check</button>
+        <div id="debugResult" class="result"></div>
+    </div>
+    
+    <script>
+        const API_BASE = 'config/simple_api_v2.php';
+        const STUDENT_ID = '2005';
+        
+        let candidates = {};
+        let studentVotes = [];
+        
+        async function checkPositions() {
+            const resultDiv = document.getElementById('positionsResult');
+            resultDiv.innerHTML = 'Loading positions...';
+            
+            try {
+                const response = await fetch(`${API_BASE}?action=get_candidates`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    let html = '<strong>Available Positions:</strong><br><br>';
+                    
+                    for (const [position, positionCandidates] of Object.entries(data.data)) {
+                        html += `<strong>${position}:</strong> ${positionCandidates.length} candidates<br>`;
+                        positionCandidates.forEach(candidate => {
+                            html += `&nbsp;&nbsp;- ${candidate.first_name} ${candidate.last_name} (ID: ${candidate.candidate_id})<br>`;
+                        });
+                        html += '<br>';
+                    }
+                    
+                    resultDiv.innerHTML = html;
+                    candidates = data.data;
+                    displayCandidates();
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        async function checkCurrentVotes() {
+            const resultDiv = document.getElementById('votesResult');
+            resultDiv.innerHTML = 'Loading current votes...';
+            
+            try {
+                const response = await fetch(`${API_BASE}?action=get_student_votes&student_id=${STUDENT_ID}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    studentVotes = data.votes || [];
+                    resultDiv.className = 'result success';
+                    
+                    let html = '<strong>Current Votes for Student ' + STUDENT_ID + ':</strong><br><br>';
+                    if (studentVotes.length === 0) {
+                        html += 'No votes found.<br>';
+                    } else {
+                        html += '<table><tr><th>Position</th><th>Candidate</th><th>Voted At</th></tr>';
+                        studentVotes.forEach(vote => {
+                            html += `<tr><td>${vote.position}</td><td>${vote.first_name} ${vote.last_name}</td><td>${vote.voted_at}</td></tr>`;
+                        });
+                        html += '</table>';
+                    }
+                    
+                    resultDiv.innerHTML = html;
+                    displayCandidates(); // Refresh display
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        function displayCandidates() {
+            const container = document.getElementById('candidatesContainer');
+            
+            if (Object.keys(candidates).length === 0) {
+                container.innerHTML = '<p>No candidates available.</p>';
+                return;
+            }
+            
+            let html = '';
+            for (const [position, positionCandidates] of Object.entries(candidates)) {
+                // Check if student has voted for this position
+                const votedForPosition = studentVotes.find(vote => vote.position === position);
+                const hasVotedForPosition = votedForPosition !== undefined;
+                
+                html += `
+                    <div class="position-group">
+                        <h3>${position} ${hasVotedForPosition ? '(VOTED)' : '(NOT VOTED)'}</h3>
+                        <div class="candidates-row">
+                            ${positionCandidates.map(candidate => {
+                                const isVotedCandidate = votedForPosition && votedForPosition.candidate_id == candidate.candidate_id;
+                                const buttonText = isVotedCandidate ? 'Voted ✓' : 'Vote';
+                                const buttonClass = isVotedCandidate ? 'vote-btn voted' : 'vote-btn';
+                                const buttonDisabled = hasVotedForPosition ? 'disabled' : '';
+                                
+                                return `
+                                    <div class="candidate-card ${isVotedCandidate ? 'voted' : ''}">
+                                        <h4>${candidate.first_name} ${candidate.last_name}</h4>
+                                        <p>ID: ${candidate.candidate_id}</p>
+                                        <p>Status: ${isVotedCandidate ? 'VOTED' : (hasVotedForPosition ? 'DISABLED' : 'AVAILABLE')}</p>
+                                        <button class="${buttonClass}" ${buttonDisabled} 
+                                                onclick="voteForCandidate(${candidate.candidate_id}, '${position}')">
+                                            ${buttonText}
+                                        </button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        async function voteForCandidate(candidateId, position) {
+            console.log(`Attempting to vote for candidate ${candidateId} for position ${position}`);
+            
+            // Check if already voted for this position
+            const hasVoted = studentVotes.some(vote => vote.position === position);
+            
+            if (hasVoted) {
+                alert(`You have already voted for ${position}!`);
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to vote for this candidate for ${position}?`)) {
+                try {
+                    const response = await fetch(API_BASE, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'submit_vote',
+                            student_id: STUDENT_ID,
+                            candidate_id: candidateId,
+                            position: position
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert(`Vote submitted successfully for ${data.candidate_name}!`);
+                        // Reload votes and refresh display
+                        await checkCurrentVotes();
+                    } else {
+                        alert('Vote failed: ' + data.message);
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+        
+        async function debugVoteStatus() {
+            const resultDiv = document.getElementById('debugResult');
+            resultDiv.innerHTML = 'Debugging vote status check...';
+            
+            try {
+                const response = await fetch(`${API_BASE}?action=get_student_votes&student_id=${STUDENT_ID}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    let html = '<strong>Debug Vote Status Check:</strong><br><br>';
+                    html += `<strong>Student ID:</strong> ${STUDENT_ID}<br>`;
+                    html += `<strong>API Response:</strong> ${JSON.stringify(data, null, 2)}<br><br>`;
+                    
+                    if (data.votes && data.votes.length > 0) {
+                        html += '<strong>Vote Status by Position:</strong><br>';
+                        for (const [position, positionCandidates] of Object.entries(candidates)) {
+                            const votedForPosition = data.votes.find(vote => vote.position === position);
+                            const hasVotedForPosition = votedForPosition !== undefined;
+                            html += `${position}: ${hasVotedForPosition ? 'VOTED' : 'NOT VOTED'}<br>`;
+                        }
+                    }
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        // Auto-run on load
+        window.onload = function() {
+            checkPositions();
+            checkCurrentVotes();
+        };
+    </script>
+</body>
+</html>

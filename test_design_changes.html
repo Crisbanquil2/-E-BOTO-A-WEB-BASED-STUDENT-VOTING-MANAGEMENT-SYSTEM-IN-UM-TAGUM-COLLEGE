@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Design Changes</title>
+    <link rel="stylesheet" href="Dasboard for Student or user/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { margin: 20px; }
+        .demo-section { margin: 40px 0; }
+        .demo-title { color: #d32f2f; font-size: 24px; margin-bottom: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Test Design Changes</h1>
+    
+    <!-- Test Navbar -->
+    <div class="demo-section">
+        <h2 class="demo-title">Updated Navbar (Admin Style)</h2>
+        <header class="topbar" role="banner">
+            <nav class="nav" aria-label="Student navigation">
+                <ul class="menu" role="menubar">
+                    <li role="none"><a role="menuitem" href="#" class="active">Home</a></li>
+                    <li role="none"><a role="menuitem" href="#">Candidates</a></li>
+                    <li role="none"><a role="menuitem" href="#">Voting Status</a></li>
+                    <li role="none"><a role="menuitem" href="#">Leading Candidate</a></li>
+                    <li role="none"><a role="menuitem" href="#">Account</a></li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+    
+    <!-- Test Single Candidate -->
+    <div class="demo-section">
+        <h2 class="demo-title">Single Candidate (Same Size)</h2>
+        <div class="position-group">
+            <h3 class="position-title">President</h3>
+            <div class="candidates-grid">
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>John Doe</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Male</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSIT</span>
+                            <span><i class="fas fa-calendar"></i> 3rd Year</span>
+                        </p>
+                        <p class="description">Vote for change</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Multiple Candidates -->
+    <div class="demo-section">
+        <h2 class="demo-title">Multiple Candidates (Same Size)</h2>
+        <div class="position-group">
+            <h3 class="position-title">Vice President</h3>
+            <div class="candidates-grid">
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Jane Smith</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Female</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSN</span>
+                            <span><i class="fas fa-calendar"></i> 4th Year</span>
+                        </p>
+                        <p class="description">Leadership</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Mike Johnson</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Male</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSCS</span>
+                            <span><i class="fas fa-calendar"></i> 2nd Year</span>
+                        </p>
+                        <p class="description">Innovation</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidate-card">
+                    <div class="candidate-photo">
+                        <div class="no-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="candidate-info">
+                        <h4>Sarah Wilson</h4>
+                        <p class="candidate-details">
+                            <span><i class="fas fa-venus-mars"></i> Female</span>
+                            <span><i class="fas fa-graduation-cap"></i> BSIT</span>
+                            <span><i class="fas fa-calendar"></i> 3rd Year</span>
+                        </p>
+                        <p class="description">Progress</p>
+                        <button class="vote-btn">
+                            <i class="fas fa-check"></i> Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2 class="demo-title">Design Summary</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef;">
+            <h4 style="color: #d32f2f; margin-bottom: 15px;">✅ Changes Made:</h4>
+            <ul style="color: #666; line-height: 1.6;">
+                <li><strong>Navbar:</strong> Updated to match admin style with gradient background, hover effects, and better spacing</li>
+                <li><strong>Candidate Cards:</strong> Fixed size (280px max width) for all positions</li>
+                <li><strong>Single Candidate:</strong> Same size as multiple candidates, centered layout</li>
+                <li><strong>Photo Size:</strong> Reduced to 70px to match the image you showed</li>
+                <li><strong>Consistent Spacing:</strong> All cards have uniform padding and margins</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
