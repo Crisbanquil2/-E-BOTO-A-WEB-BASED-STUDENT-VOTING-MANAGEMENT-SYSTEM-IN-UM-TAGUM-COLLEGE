@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Voter Design</title>
+    <link rel="stylesheet" href="voter_list.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-content">
+        <div class="welcome-section">
+            <h1><i class="fas fa-users"></i> Test Voter Design</h1>
+            <p>Testing if the CSS is loading properly on XAMPP</p>
+            <div class="welcome-badge">
+                <i class="fas fa-check-circle"></i> CSS should be working now
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Test search input...">
+                </div>
+                <div class="filter-controls">
+                    <select>
+                        <option>Test Option 1</option>
+                        <option>Test Option 2</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div>
+                    <h3>Test Card 1</h3>
+                    <p>123</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h3>Test Card 2</h3>
+                    <p>456</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-vote-yea"></i>
+                <div>
+                    <h3>Test Card 3</h3>
+                    <p>789</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="voter-list-container">
+            <div class="table-header">
+                <h3><i class="fas fa-list-alt"></i> Test Table</h3>
+                <div class="table-actions">
+                    <button class="btn btn-secondary">Test Button 1</button>
+                    <button class="btn btn-primary">Test Button 2</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="voter-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Test User 1</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td><button class="btn btn-sm btn-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Test User 2</td>
+                            <td><span class="status-badge inactive">Inactive</span></td>
+                            <td><button class="btn btn-sm btn-secondary">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

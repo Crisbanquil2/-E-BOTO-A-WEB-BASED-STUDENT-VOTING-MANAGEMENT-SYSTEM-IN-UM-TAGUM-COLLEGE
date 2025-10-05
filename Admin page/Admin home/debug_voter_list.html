@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Voter List - Admin Dashboard</title>
+    <meta name="color-scheme" content="light only">
+    <link rel="icon" href="../../pictures/logo.png">
+    <link rel="stylesheet" href="Adminhome.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Admin navigation">
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="Adminhome.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../admin candidate/admincandidate.html">Candidate</a></li>
+                <li role="none"><a role="menuitem" href="#" class="active">Voter List (Debug)</a></li>
+                <li role="none"><a role="menuitem" href="#">Leading Candidate</a></li>
+                <li role="none"><a role="menuitem" href="#">Admin</a></li>
+                <li role="none"><a role="menuitem" href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="admin-content">
+        <div class="welcome-section">
+            <h1>Debug Voter List</h1>
+            <p>Testing voter list functionality</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>Debug Information</h3>
+            <div id="debugInfo">
+                <p>Loading debug information...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>API Test</h3>
+            <button onclick="testAPI()" class="btn btn-primary">Test API</button>
+            <div id="apiResult"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>Voter List</h3>
+            <div id="voterList"></div>
+        </div>
+    </main>
+
+    <script>
+        // Debug function
+        function debugLog(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        // Test API
+        async function testAPI() {
+            debugLog('Testing API...');
+            
+            try {
+                const response = await fetch('../../config/voter_list_api.php?action=get_voters');
+                debugLog('API Response received: ' + response.status);
+                
+                const data = await response.json();
+                debugLog('API Data: ' + JSON.stringify(data, null, 2));
+                
+                document.getElementById('apiResult').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                if (data.success) {
+                    displayVoters(data.data);
+                } else {
+                    debugLog('API Error: ' + data.message);
+                }
+                
+            } catch (error) {
+                debugLog('Fetch Error: ' + error.message);
+                document.getElementById('apiResult').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Display voters
+        function displayVoters(voters) {
+            const voterList = document.getElementById('voterList');
+            
+            if (voters.length === 0) {
+                voterList.innerHTML = '<p>No voters found</p>';
+                return;
+            }
+
+            let html = '<table border="1" style="border-collapse: collapse; width: 100%;">';
+            html += '<tr><th>ID</th><th>Name</th><th>Email</th><th>Course</th><th>Status</th></tr>';
+            
+            voters.forEach(voter => {
+                html += '<tr>';
+                html += '<td>' + (voter.student_id || voter.id || 'N/A') + '</td>';
+                html += '<td>' + voter.first_name + ' ' + voter.last_name + '</td>';
+                html += '<td>' + voter.email + '</td>';
+                html += '<td>' + voter.course + '</td>';
+                html += '<td>' + (voter.status || 'active') + '</td>';
+                html += '</tr>';
+            });
+            
+            html += '</table>';
+            voterList.innerHTML = html;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('admin_session');
+            localStorage.removeItem('admin_session');
+            window.location.href = '../Admin login/AdminLogin.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Page loaded');
+            debugLog('Current URL: ' + window.location.href);
+            debugLog('API URL: ../../config/voter_list_api.php?action=get_voters');
+            
+            // Test API immediately
+            testAPI();
+        });
+    </script>
+</body>
+</html>

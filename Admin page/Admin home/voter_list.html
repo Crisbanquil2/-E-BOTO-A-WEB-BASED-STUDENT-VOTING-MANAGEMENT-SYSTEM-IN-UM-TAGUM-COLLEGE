@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter List - Admin Dashboard</title>
+    <meta name="color-scheme" content="light only">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" href="../../pictures/logo.png">
+    <link rel="stylesheet" href="voter_list.css?v=20241221">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Admin navigation" style="position: relative; padding-left: 220px;">
+            <div class="navbar-logo" style="position:absolute; left:20px; top:50%; transform: translateY(-50%); display:flex; align-items:center; gap:10px;">
+                <img src="../../pictures/UM-TAGUM (1).png" alt="UM-TAGUM College Logo" class="navbar-logo-img" style="width:46px;height:46px;object-fit:contain;border-radius:50%;background:#fff;padding:2px;">
+                <span class="brand-title" style="color:#fff; font-weight:800; letter-spacing:.5px; font-size:18px; text-transform:uppercase;">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="Adminhome.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../admin candidate/admincandidate.html">Candidate</a></li>
+                <li role="none"><a role="menuitem" href="#" class="active">Voter List</a></li>
+                <li role="none"><a role="menuitem" href="notifications.html">Notifications</a></li>
+                <li role="none" class="dropdown">
+                    <a role="menuitem" href="#" class="dropdown-toggle" onclick="toggleAdminDropdown(event)">
+                        Admin <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu" id="adminDropdown">
+                        <div class="dropdown-header">
+                            <div class="admin-profile">
+                                <i class="fas fa-user-circle"></i>
+                                <div class="admin-info">
+                                    <div class="admin-name">System Administrator</div>
+                                    <div class="admin-role">super_admin</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="admin-content">
+        <div class="welcome-section">
+            <h1><i class="fas fa-users"></i> Voter List</h1>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-section">
+            <div class="search-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, student ID, or course...">
+                </div>
+                <div class="filter-controls">
+                    <select id="courseFilter">
+                        <option value="">All Courses</option>
+                        <option value="Bachelor of Science in Accountancy">Bachelor of Science in Accountancy</option>
+                        <option value="Bachelor of Science in Business Administration">Bachelor of Science in Business Administration</option>
+                        <option value="Bachelor of Science in Hospitality Management">Bachelor of Science in Hospitality Management</option>
+                        <option value="Bachelor of Science in Tourism Management">Bachelor of Science in Tourism Management</option>
+                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                        <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
+                        <option value="Bachelor of Science in Computer Engineering">Bachelor of Science in Computer Engineering</option>
+                        <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
+                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                        <option value="Bachelor of Secondary Education">Bachelor of Secondary Education</option>
+                        <option value="Bachelor of Physical Education">Bachelor of Physical Education</option>
+                        <option value="Bachelor of Arts in Political Science">Bachelor of Arts in Political Science</option>
+                        <option value="Bachelor of Arts in Communication">Bachelor of Arts in Communication</option>
+                        <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
+                        <option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
+                        <option value="Bachelor of Science in Mechanical Engineering">Bachelor of Science in Mechanical Engineering</option>
+                        <option value="Bachelor of Science in Architecture">Bachelor of Science in Architecture</option>
+                        <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
+                        <option value="Bachelor of Science in Pharmacy">Bachelor of Science in Pharmacy</option>
+                        <option value="Bachelor of Science in Medical Technology">Bachelor of Science in Medical Technology</option>
+                    </select>
+                    <select id="yearFilter">
+                        <option value="">All Years</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="5th Year">5th Year</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voter Statistics -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div>
+                    <h3>Total Voters</h3>
+                    <p id="totalVoters">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h3>Active Voters</h3>
+                    <p id="activeVoters">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-vote-yea"></i>
+                <div>
+                    <h3>Voted</h3>
+                    <p id="votedCount">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voter List Table -->
+        <div class="voter-list-container">
+            <div class="table-header">
+                <h3><i class="fas fa-list-alt"></i> Registered Students</h3>
+                <div class="table-actions">
+                    <button class="btn btn-secondary" onclick="refreshVoterList()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="exportVoterList()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="voter-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Year Level</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                            <th>Voted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voterTableBody">
+                        <tr>
+                            <td colspan="9" class="loading-row">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading voters...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info">
+                <span id="paginationInfo">Showing 0 of 0 voters</span>
+            </div>
+            <div class="pagination-controls">
+                <button id="prevPage" class="btn btn-secondary" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <span id="pageNumbers"></span>
+                <button id="nextPage" class="btn btn-secondary" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let allVoters = [];
+        let filteredVoters = [];
+        let currentPage = 1;
+        const votersPerPage = 10;
+
+        // Check admin session
+        function checkAdminSession() {
+            const sessionData = sessionStorage.getItem('admin_session') || localStorage.getItem('admin_session');
+            
+            if (!sessionData) {
+                window.location.href = '../Admin login/AdminLogin.html';
+                return;
+            }
+            
+            try {
+                const session = JSON.parse(sessionData);
+                if (!session.admin_id || !session.username) {
+                    window.location.href = '../Admin login/AdminLogin.html';
+                    return;
+                }
+                
+                // Update dropdown admin info
+                updateAdminDropdown(session);
+            } catch (e) {
+                window.location.href = '../Admin login/AdminLogin.html';
+            }
+        }
+        
+        // Update admin dropdown info
+        function updateAdminDropdown(session) {
+            const adminName = document.getElementById('adminName');
+            const adminRole = document.getElementById('adminRole');
+            if (adminName) {
+                adminName.textContent = session.full_name || session.username || 'Admin User';
+            }
+            if (adminRole) {
+                adminRole.textContent = session.role || 'System Administrator';
+            }
+        }
+        
+        // Toggle admin dropdown
+        function toggleAdminDropdown(event) {
+            event.preventDefault();
+            const dropdown = event.target.closest('.dropdown');
+            const isActive = dropdown.classList.contains('active');
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            
+            // Toggle current dropdown
+            if (!isActive) {
+                dropdown.classList.add('active');
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+
+        // Load voter list
+        async function loadVoterList() {
+            try {
+                const response = await fetch('../../config/voter_list_api.php?action=get_voters');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allVoters = data.data;
+                    filteredVoters = [...allVoters];
+                    updateStatistics();
+                    displayVoters();
+                } else {
+                    showError('Failed to load voter list: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error loading voter list:', error);
+                showError('Error loading voter list. Please try again.');
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const totalVoters = allVoters.length;
+            const activeVoters = allVoters.filter(voter => voter.status === 'active').length;
+            const votedCount = allVoters.filter(voter => voter.has_voted).length;
+
+            document.getElementById('totalVoters').textContent = totalVoters;
+            document.getElementById('activeVoters').textContent = activeVoters;
+            document.getElementById('votedCount').textContent = votedCount;
+        }
+
+        // Display voters in table
+        function displayVoters() {
+            const tbody = document.getElementById('voterTableBody');
+            const startIndex = (currentPage - 1) * votersPerPage;
+            const endIndex = startIndex + votersPerPage;
+            const pageVoters = filteredVoters.slice(startIndex, endIndex);
+
+            if (pageVoters.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="no-data">
+                            <i class="fas fa-users"></i>
+                            No voters found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = pageVoters.map(voter => `
+                <tr>
+                    <td>${voter.student_number || voter.studentId || 'N/A'}</td>
+                    <td>${voter.first_name} ${voter.last_name}</td>
+                    <td>${voter.email}</td>
+                    <td>${voter.course}</td>
+                    <td>${voter.year_level}</td>
+                    <td>${voter.gender || 'N/A'}</td>
+                    <td>
+                        <span class="status-badge ${voter.status === 'active' ? 'active' : 'inactive'}">
+                            ${voter.status || 'active'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="voted-badge ${voter.has_voted ? 'voted' : 'not-voted'}">
+                            <i class="fas fa-${voter.has_voted ? 'check' : 'times'}"></i>
+                            ${voter.has_voted ? 'Yes' : 'No'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewVoterDetails(${voter.student_id || voter.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="toggleVoterStatus(${voter.student_id || voter.id})">
+                            <i class="fas fa-${voter.status === 'active' ? 'ban' : 'check'}"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            updatePagination();
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredVoters.length / votersPerPage);
+            const startIndex = (currentPage - 1) * votersPerPage + 1;
+            const endIndex = Math.min(currentPage * votersPerPage, filteredVoters.length);
+
+            document.getElementById('paginationInfo').textContent = 
+                `Showing ${startIndex}-${endIndex} of ${filteredVoters.length} voters`;
+
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+
+            // Generate page numbers
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(pageBtn);
+            }
+        }
+
+        // Go to specific page
+        function goToPage(page) {
+            currentPage = page;
+            displayVoters();
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const courseFilter = document.getElementById('courseFilter');
+            const yearFilter = document.getElementById('yearFilter');
+
+            searchInput.addEventListener('input', filterVoters);
+            courseFilter.addEventListener('change', filterVoters);
+            yearFilter.addEventListener('change', filterVoters);
+        }
+
+        // Filter voters
+        function filterVoters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const courseFilter = document.getElementById('courseFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+
+            filteredVoters = allVoters.filter(voter => {
+                const matchesSearch = !searchTerm || 
+                    voter.first_name.toLowerCase().includes(searchTerm) ||
+                    voter.last_name.toLowerCase().includes(searchTerm) ||
+                    (voter.student_number && voter.student_number.toLowerCase().includes(searchTerm)) ||
+                    (voter.studentId && voter.studentId.toLowerCase().includes(searchTerm)) ||
+                    voter.course.toLowerCase().includes(searchTerm);
+
+                const matchesCourse = !courseFilter || voter.course === courseFilter;
+                const matchesYear = !yearFilter || voter.year_level === yearFilter;
+
+                return matchesSearch && matchesCourse && matchesYear;
+            });
+
+            currentPage = 1;
+            displayVoters();
+        }
+
+        // Refresh voter list
+        function refreshVoterList() {
+            loadVoterList();
+        }
+
+        // Export voter list
+        function exportVoterList() {
+            const csvContent = generateCSV(filteredVoters);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'voter_list.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Generate CSV content
+        function generateCSV(voters) {
+            const headers = ['Student ID', 'First Name', 'Last Name', 'Email', 'Course', 'Year Level', 'Gender', 'Status', 'Voted'];
+            const rows = voters.map(voter => [
+                voter.student_number || voter.studentId || '',
+                voter.first_name,
+                voter.last_name,
+                voter.email,
+                voter.course,
+                voter.year_level,
+                voter.gender || '',
+                voter.status || 'active',
+                voter.has_voted ? 'Yes' : 'No'
+            ]);
+
+            return [headers, ...rows].map(row => 
+                row.map(field => `"${field}"`).join(',')
+            ).join('\n');
+        }
+
+        // View voter details
+        function viewVoterDetails(voterId) {
+            const voter = allVoters.find(v => (v.student_id || v.id) === voterId);
+            if (voter) {
+                alert(`Voter Details:\n\nName: ${voter.first_name} ${voter.last_name}\nStudent ID: ${voter.student_number || voter.studentId}\nEmail: ${voter.email}\nCourse: ${voter.course}\nYear Level: ${voter.year_level}\nGender: ${voter.gender || 'N/A'}\nStatus: ${voter.status}\nVoted: ${voter.has_voted ? 'Yes' : 'No'}`);
+            }
+        }
+
+        // Toggle voter status
+        async function toggleVoterStatus(voterId) {
+            if (confirm('Are you sure you want to change this voter\'s status?')) {
+                try {
+                    const response = await fetch('../../config/voter_list_api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'toggle_status',
+                            voter_id: voterId
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Voter status updated successfully!');
+                        loadVoterList();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error updating voter status:', error);
+                    alert('Error updating voter status. Please try again.');
+                }
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const tbody = document.getElementById('voterTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="error-row">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('admin_session');
+            localStorage.removeItem('admin_session');
+            window.location.href = '../Admin login/AdminLogin.html';
+        }
+
+        // Load dashboard statistics for voter list page
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('../../config/dashboard_stats_api.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateVoterListStats(data.data);
+                } else {
+                    console.error('Error loading dashboard stats:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+            }
+        }
+        
+        // Update voter list statistics cards with real data
+        function updateVoterListStats(stats) {
+            // Update total voters
+            const totalVotersElement = document.getElementById('totalVoters');
+            if (totalVotersElement) {
+                totalVotersElement.textContent = stats.total_voters;
+            }
+            
+            // Update active voters
+            const activeVotersElement = document.getElementById('activeVoters');
+            if (activeVotersElement) {
+                activeVotersElement.textContent = stats.active_voters;
+            }
+            
+            // Update voted count
+            const votedElement = document.getElementById('votedCount');
+            if (votedElement) {
+                votedElement.textContent = stats.voted;
+            }
+            
+            console.log('Voter list stats updated:', stats);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAdminSession();
+            loadVoterList();
+            loadDashboardStats();
+            setupSearch();
+        });
+    </script>
+</body>
+</html>

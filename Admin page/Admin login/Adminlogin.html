@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Student Voting System</title>
+    <link rel="stylesheet" href="AdminLogin.css">
+    <link rel="icon" href="../../pictures/logo.png">
+    <meta name="color-scheme" content="light only">
+</head>
+<body>
+    <div class="layout">
+        <aside class="left hero" aria-label="Background panel"></aside>
+        <section class="right">
+            <div class="container">
+                <div class="brand">
+                    <img class="Backround1" src="../../pictures/Students.png" alt="">
+                    <img class="logo" src="../../pictures/logo.png" alt="University logo">
+                    <h1>Admin Portal</h1>
+                </div>
+                <div class="card" role="region" aria-label="Admin login form">
+                    <form id="adminLoginForm" novalidate>
+                        <div class="field">
+                            <label for="adminUsername">Admin Username</label>
+                            <input id="adminUsername" name="adminUsername" type="text" autocomplete="username" placeholder="Enter admin username" required aria-required="true" />
+                        </div>
+
+                        <div class="field">
+                            <label for="adminPassword">Password</label>
+                            <input id="adminPassword" name="adminPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required aria-required="true" />
+                        </div>
+
+                        <div class="helper">
+                            <label class="checkbox">
+                                <input id="rememberMe" name="rememberMe" type="checkbox" />
+                                Remember me
+                            </label>
+                            <a href="#" aria-label="Forgot your password?">Forgot password?</a>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn">Sign in as Admin</button>
+                        </div>
+
+                        <div class="helper" style="justify-content:center; margin-top:12px;">
+                            <a href="../../Login/login.html" aria-label="Back to student login">Back to Student Login</a>
+                        </div>
+
+                        <div id="errorMessage" class="error" role="alert"></div>
+                        <div id="successMessage" class="success" role="status"></div>
+                    </form>
+                </div>
+                <div class="footer"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+        const form = document.getElementById('adminLoginForm');
+        const adminUsernameInput = document.getElementById('adminUsername');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const rememberMeInput = document.getElementById('rememberMe');
+        const errorEl = document.getElementById('errorMessage');
+        const successEl = document.getElementById('successMessage');
+
+        function showMessage(el, message) {
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
+        function hideMessages() {
+            errorEl.style.display = 'none';
+            errorEl.textContent = '';
+            successEl.style.display = 'none';
+            successEl.textContent = '';
+        }
+
+        function validateInputs(username, password) {
+            if (!username || !password) {
+                return 'Please enter both Username and Password.';
+            }
+            if (password.length < 6) {
+                return 'Password must be at least 6 characters.';
+            }
+            return '';
+        }
+
+        // Check for URL parameters
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const loggedOut = urlParams.get('logged_out');
+            const error = urlParams.get('error');
+            
+            if (loggedOut === '1') {
+                showMessage(successEl, 'You have been logged out successfully.');
+            } else if (error === 'logout_failed') {
+                showMessage(errorEl, 'Logout failed. Please try again.');
+            }
+        }
+
+        // Initialize page
+        checkUrlParams();
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            hideMessages();
+
+            const username = adminUsernameInput.value.trim();
+            const password = adminPasswordInput.value;
+            const remember = !!rememberMeInput.checked;
+
+            const validationError = validateInputs(username, password);
+            if (validationError) {
+                showMessage(errorEl, validationError);
+                return;
+            }
+
+            // Simple hardcoded login check
+            if (username === 'admin' && password === 'admin123') {
+                // Login successful
+                showMessage(successEl, 'Admin login successful. Redirecting...');
+                
+                // Create session data
+                const sessionData = {
+                    admin_id: 1,
+                    username: 'admin',
+                    full_name: 'System Administrator',
+                    role: 'super_admin',
+                    login_time: Date.now()
+                };
+                
+                // Store session data
+                if (remember) {
+                    localStorage.setItem('admin_session', JSON.stringify(sessionData));
+                } else {
+                    sessionStorage.setItem('admin_session', JSON.stringify(sessionData));
+                }
+                
+                // Redirect to admin dashboard
+                setTimeout(() => {
+                    window.location.href = '../Admin home/Adminhome.html';
+                }, 1000);
+            } else {
+                showMessage(errorEl, 'Invalid username or password. Use admin/admin123');
+            }
+        });
+    </script>
+</body>
+</html>

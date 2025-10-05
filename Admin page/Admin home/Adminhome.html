@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home - Navbar Only (Updated)</title>
+    <meta name="color-scheme" content="light only">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" href="../../pictures/logo.png">
+    <link rel="stylesheet" href="Adminhome.css?v=20241220">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+    .leading-block{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.06);padding:16px;margin-bottom:24px}
+    .position-section{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
+    .position-badge{display:flex;align-items:center;justify-content:center;border:2px solid #d32f2f;border-radius:8px;color:#d32f2f;font-weight:800;text-transform:uppercase;padding:12px 10px}
+    .position-chart{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px;height:260px;box-sizing:border-box}
+    .position-chart canvas{width:100% !important;height:100% !important}
+    .candidates-list{display:grid;gap:12px}
+    .candidate-card{display:flex;align-items:center;gap:12px;border:2px solid #d32f2f;border-radius:10px;padding:16px;background:#fff}
+    .candidate-photo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e5e7eb}
+    .candidate-photo.no-photo{display:flex;align-items:center;justify-content:center;background:#f8f9fa;color:#6c757d;border:2px solid #dee2e6;position:relative}
+    .candidate-photo.no-photo i{font-size:32px;color:#6c757d;opacity:0.8}
+    .candidate-photo.no-photo::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236c757d"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>') no-repeat center;background-size:contain;opacity:0.6}
+    .candidate-info{flex:1 1 auto;min-width:0}
+    .candidate-name{font-size:18px;font-weight:800;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vote-stats{text-align:right;min-width:110px}
+    .vote-count{font-size:28px;font-weight:800;color:#d32f2f}
+    .vote-label{font-size:12px;color:#6b7280}
+    .vote-percent{font-size:18px;color:#d32f2f;font-weight:800}
+    .total-row{margin-top:8px;background:#f3f4f6;border-radius:6px;padding:8px;text-align:center;color:#6b7280;border:1px solid #e5e7eb}
+    </style>
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Admin navigation" style="position: relative; padding-left: 220px;">
+            <div class="navbar-logo" style="position:absolute; left:20px; top:50%; transform: translateY(-50%); display:flex; align-items:center; gap:10px;">
+                <img src="../../pictures/UM-TAGUM (1).png" alt="UM-TAGUM College Logo" class="navbar-logo-img" style="width:46px;height:46px;object-fit:contain;border-radius:50%;background:#fff;padding:2px;">
+                <span class="brand-title" style="color:#fff; font-weight:800; letter-spacing:.5px; font-size:18px; text-transform:uppercase;">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="Adminhome.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../admin candidate/admincandidate.html">Candidate</a></li>
+                <li role="none"><a role="menuitem" href="voter_list.html">Voter List</a></li>
+                <li role="none"><a role="menuitem" href="notifications.html">Notifications</a></li>
+                <li role="none" class="dropdown">
+                    <a role="menuitem" href="Adminhome.html" class="dropdown-toggle" onclick="toggleAdminDropdown(event)">
+                        Admin <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu" id="adminDropdown">
+                        <div class="dropdown-header">
+                            <div class="admin-profile">
+                                <i class="fas fa-user-circle"></i>
+                                <div class="admin-info">
+                                    <div class="admin-name">System Administrator</div>
+                                    <div class="admin-role">super_admin</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="admin-content">
+        <div class="welcome-section">
+            <h1>Welcome to Admin Dashboard</h1>
+            <p id="admin-info">Loading admin information...</p>
+        </div>
+        
+
+        <div class="welcome-section" style="margin-top:24px;">
+            <h1><i class="fas fa-trophy" style="color:#000"></i> Leading Candidates</h1>
+            <p>Real-time voting results and candidate standings</p>
+            <div>
+                <a href="#" class="btn btn-primary" onclick="refreshAll(event)" style="background:#2563EB;color:#fff;border-radius:12px;padding:12px 18px;display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+                    <i class="fas fa-chart-line"></i> Live voting statistics
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-bottom:24px;">
+            <div class="card"><div class="card-icon"><i class="fas fa-users"></i></div><h3>Total Voters</h3><p class="number" id="statTotalVoters">0</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-check-square"></i></div><h3>Total Votes</h3><p class="number" id="statTotalVotes">0</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-percentage"></i></div><h3>Voting Rate</h3><p class="number" id="statVotingRate">0%</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-user-tie"></i></div><h3>Total Candidates</h3><p class="number" id="statTotalCandidates">0</p></div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-bottom:12px;">
+            <button class="btn btn-secondary" onclick="refreshAll(event)" style="background:#6b7280;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="btn btn-primary" onclick="exportResults()" style="background:#d32f2f;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                <i class="fas fa-download"></i> Export Results
+            </button>
+        </div>
+
+        <div id="resultsContainer"></div>
+    </main>
+
+    <script>
+    // Check if admin is logged in
+    function checkAdminSession() {
+        // Check if we have session data
+        const sessionData = sessionStorage.getItem('admin_session') || localStorage.getItem('admin_session');
+        
+        if (!sessionData) {
+            // No session data, redirect to login
+            window.location.href = '../Admin login/AdminLogin.html';
+            return;
+        }
+        
+        try {
+            const session = JSON.parse(sessionData);
+            if (!session.admin_id || !session.username) {
+                // Invalid session data, redirect to login
+                window.location.href = '../Admin login/AdminLogin.html';
+                return;
+            }
+            
+            // Display admin info
+            displayAdminInfo(session);
+            
+        } catch (e) {
+            // Invalid session data, redirect to login
+            window.location.href = '../Admin login/AdminLogin.html';
+        }
+    }
+    
+        // Display admin information
+        function displayAdminInfo(session) {
+            const adminInfo = document.getElementById('admin-info');
+            if (adminInfo) {
+                adminInfo.innerHTML = `Welcome, <strong>System Administrator</strong> (super_admin)`;
+            }
+            
+            console.log('Admin logged in:', session);
+        }
+    
+    // Toggle admin dropdown
+    function toggleAdminDropdown(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const dropdown = event.target.closest('.dropdown');
+        const isActive = dropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        
+        // Toggle current dropdown
+        if (!isActive) {
+            dropdown.classList.add('active');
+        }
+        
+        return false; // Prevent any default behavior
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        }
+    });
+
+    // ===== Notifications (shared with notifications.html via localStorage) =====
+    const NOTIF_KEY = 'svms_notifications';
+    const NOTIF_READ_KEY = 'svms_notifications_read_at';
+    function getAllNotifs(){
+        try { return JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch(e){ return []; }
+    }
+    function getReadAt(){
+        return Number(localStorage.getItem(NOTIF_READ_KEY) || 0);
+    }
+    function setReadNow(){
+        localStorage.setItem(NOTIF_READ_KEY, String(Date.now()));
+    }
+    function countUnread(notifs){
+        const readAt = getReadAt();
+        return (notifs||[]).filter(n => Number(n.created_at||0) > readAt).length;
+    }
+    function toggleNotifDropdown(e){
+        e.preventDefault();
+        e.stopPropagation();
+        const dd = document.getElementById('notifDropdown');
+        if(!dd) return;
+        const isShown = dd.style.display === 'block';
+        document.querySelectorAll('#notifDropdown').forEach(el=> el.style.display='none');
+        dd.style.display = isShown ? 'none' : 'block';
+        if(!isShown) renderNotifItems();
+    }
+    document.addEventListener('click', function(e){
+        if(!e.target.closest('#notifBell')){
+            const dd = document.getElementById('notifDropdown');
+            if(dd) dd.style.display='none';
+        }
+    });
+    function renderNotifBadge(){
+        const notifs = getAllNotifs();
+        const unread = countUnread(notifs);
+        const badge = document.getElementById('notifBadge');
+        const dot = document.getElementById('notifCountDot');
+        if(badge){
+            if(unread>0){ badge.style.display='inline-block'; badge.textContent = unread; } else { badge.style.display='none'; }
+        }
+        if(dot){
+            if(unread>0){ dot.style.display='inline-block'; dot.textContent = unread; } else { dot.style.display='none'; }
+        }
+    }
+    function timeAgo(ts){
+        const diff = Date.now() - Number(ts||0);
+        const mins = Math.floor(diff/60000);
+        if(mins<60) return mins<=1? '1 min ago' : mins+' mins ago';
+        const hrs = Math.floor(mins/60);
+        if(hrs<24) return hrs===1? '1 hour ago' : hrs+' hours ago';
+        const days = Math.floor(hrs/24);
+        return days===1? '1 day ago' : days+' days ago';
+    }
+    function renderNotifItems(){
+        const list = getAllNotifs();
+        const container = document.getElementById('notifItems');
+        if(!container) return;
+        if(!list.length){
+            container.innerHTML = '<div style="padding:16px;color:#6b7280;">No notifications</div>';
+            return;
+        }
+        container.innerHTML = list.map(n=>{
+            const icon = '<i class="fas fa-info-circle" style="color:#ef4444;"></i>';
+            return `<div style="padding:14px 16px; display:flex; gap:10px; border-top:1px solid #f3f4f6;">
+                <div style="width:20px; text-align:center;">${icon}</div>
+                <div style="flex:1;">
+                    <div style="color:#111827; font-weight:600;">${(n.title||'').replace(/</g,'&lt;')}</div>
+                    <div style="color:#374151; margin-top:4px;">${(n.body||'').replace(/</g,'&lt;')}</div>
+                    <div style="color:#6b7280; font-size:12px; margin-top:6px;">${timeAgo(n.created_at)}</div>
+                </div>
+            </div>`;
+        }).join('');
+        renderNotifBadge();
+    }
+    function markAllNotifsRead(){
+        setReadNow();
+        renderNotifBadge();
+        const dd = document.getElementById('notifDropdown');
+        if(dd) dd.style.display='none';
+    }
+    
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        console.log('Loading dashboard statistics...');
+        try {
+            const response = await fetch('../../config/dashboard_stats_api.php');
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Dashboard stats response:', data);
+            
+            if (data.success) {
+                console.log('Successfully loaded dashboard stats:', data.data);
+                updateDashboardCards(data.data);
+            } else {
+                console.error('Error loading dashboard stats:', data.error);
+                alert('Error loading dashboard data: ' + data.error);
+                // Show default values on error
+                updateDashboardCards({
+                    total_voters: 0,
+                    active_voters: 0,
+                    total_candidates: 0,
+                    votes_cast: 0,
+                    active_elections: 0,
+                    voted: 0
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+            alert('Error connecting to server: ' + error.message);
+            // Show default values on error
+            updateDashboardCards({
+                total_voters: 0,
+                active_voters: 0,
+                total_candidates: 0,
+                votes_cast: 0,
+                active_elections: 0,
+                voted: 0
+            });
+        }
+    }
+    
+        // Update dashboard cards with real data
+        function updateDashboardCards(stats) {
+            const totalVoters = Number(stats.total_voters || 0);
+            const totalCandidates = Number(stats.total_candidates || 0);
+            const votesCast = Number(stats.votes_cast || 0);
+            const votingRate = totalVoters > 0 ? Math.round((votesCast / totalVoters) * 1000) / 10 : 0;
+
+            const el = (id)=> document.getElementById(id);
+            if(el('statTotalVoters')) el('statTotalVoters').textContent = totalVoters;
+            if(el('statTotalVotes')) el('statTotalVotes').textContent = votesCast;
+            if(el('statVotingRate')) el('statVotingRate').textContent = votingRate + '%';
+            if(el('statTotalCandidates')) el('statTotalCandidates').textContent = totalCandidates;
+
+            console.log('Dashboard stats updated:', { totalVoters, totalCandidates, votesCast, votingRate });
+        }
+    
+    // Logout function
+    function logout() {
+        // Clear session data
+        sessionStorage.removeItem('admin_session');
+        localStorage.removeItem('admin_session');
+        
+        // Redirect to login
+        window.location.href = '../Admin login/AdminLogin.html';
+    }
+    
+    // Leading candidates helpers (moved from leading_candidates.html)
+    const positionOrder = ['President','Vice President','Mayor','Vice Mayor','Secretary','Treasurer','Auditor','Public Information Officer (PIO)','Business Manager','Peace Officer'];
+    const charts = {};
+    let lastLeadingData = null; // cache latest leading data for export
+    function color(i){const c=['#2563EB','#DC2626','#10B981','#F59E0B','#8B5CF6','#059669','#D946EF','#F97316','#0EA5E9','#9333EA'];return c[i%c.length];}
+    async function loadLeading(){
+        const res = await fetch('../../config/voting_api.php?action=get_leading_candidates');
+        const data = await res.json();
+        if(!data.success){document.getElementById('resultsContainer').innerHTML = '<div class="leading-block">Failed to load.</div>';return;}
+        lastLeadingData = { candidates: data.candidates || [], totals: data.position_totals || {} };
+        renderBlocks(lastLeadingData.candidates, lastLeadingData.totals);
+    }
+    function groupByPosition(cands){const g={};(cands||[]).forEach(c=>{ if(!g[c.position]) g[c.position]=[]; g[c.position].push(c); });return g;}
+    function renderBlocks(candidates, totals){
+        const byPos = groupByPosition(candidates);
+        const order = positionOrder.filter(p=> byPos[p] && byPos[p].length>0);
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = order.map(position=>{
+            const pid = position.replace(/[^a-zA-Z0-9]/g,'_');
+            return `
+                <section class="leading-block">
+                    <div class="position-section">
+                        <div class="position-badge">${position}</div>
+                        <div>
+                            <div class="position-chart"><canvas id="chart_${pid}"></canvas></div>
+                            <div class="candidates-list" id="list_${pid}"></div>
+                            <div class="total-row">Total votes for ${position}: ${totals[position]||0}</div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }).join('');
+        order.forEach((position,idx)=>{
+            const pid = position.replace(/[^a-zA-Z0-9]/g,'_');
+            const list = document.getElementById('list_'+pid);
+            const items = (byPos[position]||[]).map((c,i)=>{
+                return `
+                    <div class="candidate-card">
+                        ${c.photo ? `<img class=\"candidate-photo\" src="${c.photo}" alt="${c.first_name}">` : `<div class=\"candidate-photo no-photo\"><i class=\\"fas fa-user\\"></i></div>`}
+                        <div class="candidate-info">
+                            <div class="candidate-name">${c.first_name} ${c.last_name}</div>
+                            <div class="candidate-position">${c.position}</div>
+                        </div>
+                        <div class="vote-stats">
+                            <div class="vote-count">${c.vote_count||0}</div>
+                            <div class="vote-label">VOTES</div>
+                            <div class="vote-percent">${c.percentage||0}%</div>
+                        </div>
+                    </div>`;
+            }).join('');
+            list.innerHTML = items;
+            buildChart('chart_'+pid, byPos[position]);
+        });
+    }
+    async function buildChart(canvasId, positionCands){
+        const label = canvasId.replace('chart_','').replace(/_/g,' ');
+        const res = await fetch(`../../config/candidates_api.php?action=get_results_by_year&position=${encodeURIComponent(label)}`);
+        const js = await res.json();
+        if(!js.success || !js.data || !js.data[label]) return;
+        const years = js.data[label].years || ['1st Year','2nd Year','3rd Year','4th Year','5th Year'];
+        const totals = years.map((_,i)=> js.data[label].candidates.reduce((s,c)=> s+(c.counts[i]||0),0));
+        const datasets = js.data[label].candidates.map((c,i)=>{ const perc = years.map((_,idx)=>{const t=totals[idx]||0;const v=c.counts[idx]||0;return t>0?Math.round((v/t)*100):0}); return { label:`${c.first_name} ${c.last_name}`, data:perc, borderColor:color(i), backgroundColor:color(i), tension:.35, fill:false, pointRadius:3, pointHoverRadius:5 }; });
+        const ctx = document.getElementById(canvasId);
+        if(charts[canvasId]) charts[canvasId].destroy();
+        charts[canvasId] = new Chart(ctx,{type:'bar',data:{labels:years,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:(it)=>`${it.dataset.label}: ${it.formattedValue}%`}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+    }
+    function refreshAll(e){ if(e) e.preventDefault(); loadDashboardStats(); loadLeading(); }
+
+    // Export leading candidates to CSV (Excel-compatible)
+    function exportResults(){
+        try{
+            if(!lastLeadingData || !Array.isArray(lastLeadingData.candidates) || lastLeadingData.candidates.length===0){
+                alert('No results to export yet. Loading latest results now...');
+                loadLeading().then(()=>{
+                    if(lastLeadingData && lastLeadingData.candidates && lastLeadingData.candidates.length>0){
+                        exportResults();
+                    }
+                });
+                return;
+            }
+
+            // Group by position and sort candidates by votes desc within each position
+            const grouped = {};
+            lastLeadingData.candidates.forEach(c=>{
+                if(!grouped[c.position]) grouped[c.position] = [];
+                grouped[c.position].push(c);
+            });
+            Object.keys(grouped).forEach(p=> grouped[p].sort((a,b)=> (b.vote_count||0)-(a.vote_count||0)));
+
+            // CSV header
+            const rows = [];
+            rows.push(['Position','First Name','Last Name','Votes','Percentage'].join(','));
+
+            // Follow canonical position order
+            positionOrder.forEach(position=>{
+                if(!grouped[position]) return;
+                grouped[position].forEach(c=>{
+                    const vals = [position, c.first_name||'', c.last_name||'', String(c.vote_count||0), String(c.percentage||0) + '%'];
+                    // escape quotes and commas
+                    const escaped = vals.map(v=> '"' + String(v).replace(/"/g,'""') + '"');
+                    rows.push(escaped.join(','));
+                });
+                const total = (lastLeadingData.totals && lastLeadingData.totals[position]) ? lastLeadingData.totals[position] : 0;
+                rows.push(['"' + position + ' Total"','','','"' + total + '"',''].join(','));
+                rows.push('');
+            });
+
+            const csv = '\uFEFF' + rows.join('\r\n'); // BOM for Excel
+            const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];
+            a.href = url;
+            a.download = `leading-candidates-${timestamp}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }catch(err){
+            console.error('Export error:', err);
+            alert('Failed to export results.');
+        }
+    }
+
+    // Check session and load data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAdminSession();
+        loadDashboardStats();
+        loadLeading();
+    });
+    </script>
+</body>
+</html>

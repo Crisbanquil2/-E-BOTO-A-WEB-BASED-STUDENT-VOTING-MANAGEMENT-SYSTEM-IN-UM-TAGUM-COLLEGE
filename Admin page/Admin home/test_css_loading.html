@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Loading Test</title>
+    <link rel="stylesheet" href="voter_list.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Admin navigation">
+            <div class="brand">Student Voting System</div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="Adminhome.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../admin candidate/admincandidate.html">Candidate</a></li>
+                <li role="none"><a role="menuitem" href="#" class="active">Voter List</a></li>
+                <li role="none"><a role="menuitem" href="#">Leading Candidate</a></li>
+                <li role="none"><a role="menuitem" href="#">Admin</a></li>
+                <li role="none"><a role="menuitem" href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="admin-content">
+        <div class="welcome-section">
+            <h1><i class="fas fa-users"></i> CSS Loading Test</h1>
+            <p>If you can see this styled properly, the CSS is loading correctly!</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Test Card 1</h3>
+                <p class="number">123</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3>Test Card 2</h3>
+                <p class="number">456</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            alert('Logout clicked - CSS is working!');
+        }
+        
+        // Check if CSS is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const testElement = document.querySelector('.topbar');
+            if (testElement) {
+                const styles = window.getComputedStyle(testElement);
+                const bgColor = styles.backgroundColor;
+                console.log('Topbar background color:', bgColor);
+                
+                if (bgColor.includes('rgb(211, 47, 47)') || bgColor.includes('#d32f2f')) {
+                    console.log('✅ CSS is loading correctly!');
+                } else {
+                    console.log('❌ CSS might not be loading properly');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

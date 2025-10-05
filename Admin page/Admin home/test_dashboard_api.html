@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #d32f2f;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Dashboard API Test</h1>
+        <p>Testing the dashboard statistics API to see real data from the database.</p>
+        
+        <button onclick="testDashboardAPI()">Load Dashboard Stats</button>
+        <button onclick="testVoterAPI()">Load Voter List</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="results"></div>
+        
+        <div id="dashboard-stats" style="display: none;">
+            <h2>Dashboard Statistics</h2>
+            <div class="stat-card">
+                <div class="stat-number" id="total-voters">0</div>
+                <div class="stat-label">Total Voters (Registered Students)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="active-voters">0</div>
+                <div class="stat-label">Active Voters</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-candidates">0</div>
+                <div class="stat-label">Total Candidates</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="votes-cast">0</div>
+                <div class="stat-label">Votes Cast</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="voted">0</div>
+                <div class="stat-label">Students Who Voted</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testDashboardAPI() {
+            const resultsDiv = document.getElementById('results');
+            const statsDiv = document.getElementById('dashboard-stats');
+            
+            resultsDiv.innerHTML = '<div class="success">Loading dashboard statistics...</div>';
+            
+            try {
+                const response = await fetch('../../config/dashboard_stats_api.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = '<div class="success">✅ Dashboard API working! Data loaded successfully.</div>';
+                    
+                    // Update the stat cards
+                    document.getElementById('total-voters').textContent = data.data.total_voters;
+                    document.getElementById('active-voters').textContent = data.data.active_voters;
+                    document.getElementById('total-candidates').textContent = data.data.total_candidates;
+                    document.getElementById('votes-cast').textContent = data.data.votes_cast;
+                    document.getElementById('voted').textContent = data.data.voted;
+                    
+                    statsDiv.style.display = 'block';
+                    
+                    console.log('Dashboard stats:', data.data);
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ API Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Network Error: ${error.message}</div>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        async function testVoterAPI() {
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '<div class="success">Loading voter list...</div>';
+            
+            try {
+                const response = await fetch('../../config/voter_list_api.php?action=get_voters');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = `<div class="success">✅ Voter API working! Found ${data.data.length} registered students.</div>`;
+                    console.log('Voter list:', data.data);
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ Voter API Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Network Error: ${error.message}</div>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('dashboard-stats').style.display = 'none';
+        }
+        
+        // Auto-load on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            testDashboardAPI();
+        });
+    </script>
+</body>
+</html>
