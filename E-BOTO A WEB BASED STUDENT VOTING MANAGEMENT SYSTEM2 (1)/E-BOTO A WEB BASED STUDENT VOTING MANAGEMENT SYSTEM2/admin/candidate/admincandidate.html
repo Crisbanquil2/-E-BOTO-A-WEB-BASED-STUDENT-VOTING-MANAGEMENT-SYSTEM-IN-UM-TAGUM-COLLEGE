@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Candidate Management</title>
+    <link rel="stylesheet" href="admincandidate.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 style="color: rgb(255, 0, 0);"><i class="fas fa-users"></i> Candidate Management</h1>
+                <div class="header-actions">
+                    <a href="../Admin home/Adminhome.html" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Add Candidate Form -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h2><i class="fas fa-user-plus"></i> Add New Candidate</h2>
+                    <p>Fill in the candidate information below</p>
+                </div>
+
+                <form id="candidateForm" class="candidate-form" action="#" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">
+                                <i class="fas fa-user"></i> First Name *
+                            </label>
+                            <input type="text" id="firstName" name="firstName" required>
+                            <span class="error-message" id="firstNameError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">
+                                <i class="fas fa-user"></i> Last Name *
+                            </label>
+                            <input type="text" id="lastName" name="lastName" required>
+                            <span class="error-message" id="lastNameError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="position">
+                                <i class="fas fa-bullhorn"></i> Position *
+                            </label>
+                            <select id="position" name="position" required>
+                                <option value="">Select Position</option>
+                                <option value="President">President</option>
+                                <option value="Vice President">Vice President</option>
+                                <option value="Mayor">Mayor</option>
+                                <option value="Vice Mayor">Vice Mayor</option>
+                                <option value="Secretary">Secretary</option>
+                                <option value="Treasurer">Treasurer</option>
+                                <option value="Auditor">Auditor</option>
+                                <option value="Public Information Officer (PIO)">Public Information Officer (PIO)</option>
+                                <option value="Business Manager">Business Manager</option>
+                                <option value="Peace Officer">Peace Officer</option>
+                            </select>
+                            <span class="error-message" id="positionError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">
+                                <i class="fas fa-venus-mars"></i> Gender *
+                            </label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="error-message" id="genderError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="course">
+                                <i class="fas fa-graduation-cap"></i> Course *
+                            </label>
+                            <select id="course" name="course" required>
+                                <option value="">Select Course</option>
+                                <option value="Bachelor of Science in Accountancy">Bachelor of Science in Accountancy</option>
+                                <option value="Bachelor of Science in Business Administration">Bachelor of Science in Business Administration</option>
+                                <option value="Bachelor of Science in Hospitality Management">Bachelor of Science in Hospitality Management</option>
+                                <option value="Bachelor of Science in Tourism Management">Bachelor of Science in Tourism Management</option>
+                                <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                                <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
+                                <option value="Bachelor of Science in Computer Engineering">Bachelor of Science in Computer Engineering</option>
+                                <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
+                                <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                                <option value="Bachelor of Secondary Education">Bachelor of Secondary Education</option>
+                                <option value="Bachelor of Physical Education">Bachelor of Physical Education</option>
+                                <option value="Bachelor of Arts in Political Science">Bachelor of Arts in Political Science</option>
+                                <option value="Bachelor of Arts in Communication">Bachelor of Arts in Communication</option>
+                                <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
+                                <option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
+                                <option value="Bachelor of Science in Mechanical Engineering">Bachelor of Science in Mechanical Engineering</option>
+                                <option value="Bachelor of Science in Architecture">Bachelor of Science in Architecture</option>
+                                <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
+                                <option value="Bachelor of Science in Pharmacy">Bachelor of Science in Pharmacy</option>
+                                <option value="Bachelor of Science in Medical Technology">Bachelor of Science in Medical Technology</option>
+                            </select>
+                            <span class="error-message" id="courseError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="year">
+                                <i class="fas fa-calendar"></i> Year Level *
+                            </label>
+                            <select id="year" name="year" required>
+                                <option value="">Select Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="5th Year">5th Year</option>
+                            </select>
+                            <span class="error-message" id="yearError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-file-text"></i> Description/Platform (Optional)
+                        </label>
+                        <textarea id="description" name="description" rows="4" placeholder="Enter candidate's platform or description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="photo">
+                            <i class="fas fa-camera"></i> Candidate Photo (Optional)
+                        </label>
+                        <input type="file" id="photo" name="photo" accept="image/*">
+                        <small class="file-hint">Recommended size: 300x300px, Max size: 2MB</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Add Candidate
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Candidates List -->
+            <div class="candidates-list">
+                <div class="list-header">
+                    <h3><i class="fas fa-list"></i> Current Candidates</h3>
+                    <div class="list-actions">
+                        <button class="btn btn-outline" onclick="refreshList()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidates-grid" id="candidatesGrid">
+                    <!-- Candidates will be displayed here -->
+                    <div class="no-candidates">
+                        <i class="fas fa-users"></i>
+                        <p>No candidates added yet</p>
+                        <small>Add your first candidate using the form above</small>
+                    </div>
+                </div>
+            </div>
+
+            
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Success!</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Candidate has been successfully added!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load candidates on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCandidates();
+        });
+
+        // Form validation and submission
+        document.getElementById('candidateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                const editingId = document.getElementById('editingId') && document.getElementById('editingId').value;
+                if(editingId){ updateCandidate(Number(editingId)); } else { addCandidate(); }
+            }
+        });
+
+        // Photo preview functionality with compression
+        document.getElementById('photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image file is too large. Please choose an image smaller than 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Compress and resize image
+                compressImage(file, function(compressedDataUrl) {
+                    document.getElementById('photo').dataset.preview = compressedDataUrl;
+                });
+            }
+        });
+
+        // Image compression function
+        function compressImage(file, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                // Calculate new dimensions (max 400x400)
+                let { width, height } = img;
+                const maxSize = 400;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                // Set canvas dimensions
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to base64 with compression (quality 0.8)
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                callback(compressedDataUrl);
+            };
+            
+            img.src = URL.createObjectURL(file);
+        }
+
+        async function addCandidate() {
+            const formData = new FormData(document.getElementById('candidateForm'));
+            const photoFile = document.getElementById('photo').files[0];
+            
+            // Create candidate object
+            const candidate = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                position: formData.get('position'),
+                gender: formData.get('gender'),
+                course: formData.get('course'),
+                year_level: formData.get('year'),
+                description: formData.get('description') || '',
+                photo: null
+            };
+
+            // Handle photo upload with compression
+            if (photoFile) {
+                // Use the compressed image from dataset
+                const compressedImage = document.getElementById('photo').dataset.preview;
+                if (compressedImage) {
+                    candidate.photo = compressedImage;
+                } else {
+                    // Fallback: compress the image now
+                    compressImage(photoFile, async function(compressedDataUrl) {
+                        candidate.photo = compressedDataUrl;
+                        await saveCandidate(candidate);
+                    });
+                    return; // Exit early, saveCandidate will be called from callback
+                }
+            }
+            
+            await saveCandidate(candidate);
+        }
+
+        async function updateCandidate(id){
+            const formData = new FormData(document.getElementById('candidateForm'));
+            const photoFile = document.getElementById('photo').files[0];
+            const payload = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                position: formData.get('position'),
+                gender: formData.get('gender'),
+                course: formData.get('course'),
+                year_level: formData.get('year'),
+                description: formData.get('description') || ''
+            };
+            
+            const send = async (photo)=>{
+                try{
+                    const res = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/ultra_simple_api.php',{
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ action:'update_candidate', candidate_id:id, data:{...payload, photo} })
+                    });
+                    const result = await res.json();
+                    if(result.success){
+                        loadCandidates();
+                        alert('Candidate updated successfully');
+                        document.getElementById('editingId').value='';
+                        resetForm();
+                    }else{
+                        alert('Error updating candidate: ' + result.message);
+                    }
+                }catch(err){ console.error('update error', err); alert('Error updating candidate.'); }
+            };
+            
+            if(photoFile){
+                // Use compressed image if available
+                const compressedImage = document.getElementById('photo').dataset.preview;
+                if (compressedImage) {
+                    send(compressedImage);
+                } else {
+                    // Fallback: compress the image now
+                    compressImage(photoFile, function(compressedDataUrl) {
+                        send(compressedDataUrl);
+                    });
+                }
+            }else{
+                send(undefined);
+            }
+        }
+
+        async function saveCandidate(candidate) {
+            try {
+                console.log('Sending candidate data:', candidate);
+                
+                const response = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/ultra_simple_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'add_candidate',
+                        data: candidate
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                if (result.success) {
+                    // Update display
+                    loadCandidates();
+                    
+                    // Show success modal
+                    document.getElementById('successModal').style.display = 'block';
+                    
+                    // Reset form
+                    resetForm();
+                } else {
+                    alert('Error adding candidate: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error saving candidate:', error);
+                alert('Error saving candidate: ' + error.message);
+            }
+        }
+
+        async function loadCandidates() {
+            try {
+                console.log('Loading candidates...');
+                const response = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/ultra_simple_api.php?action=get_candidates');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                const candidatesGrid = document.getElementById('candidatesGrid');
+                
+                if (!data.success || !data.data || Object.keys(data.data).length === 0) {
+                    candidatesGrid.innerHTML = `
+                        <div class="no-candidates">
+                            <i class="fas fa-users"></i>
+                            <p>No candidates added yet</p>
+                            <small>Add your first candidate using the form above</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Flatten candidates from all positions
+                const allCandidates = [];
+                for (const positionCandidates of Object.values(data.data)) {
+                    allCandidates.push(...positionCandidates);
+                }
+
+                candidatesGrid.innerHTML = allCandidates.map(candidate => `
+                    <div class="candidate-card">
+                        <div class="candidate-photo">
+                            ${candidate.photo ? 
+                                `<img src="${candidate.photo}" alt="${candidate.first_name} ${candidate.last_name}">` : 
+                                `<div class="no-photo"><i class="fas fa-user"></i></div>`
+                            }
+                        </div>
+                        <div class="candidate-info">
+                            <h4>${candidate.first_name} ${candidate.last_name}</h4>
+                            <p class="position">${candidate.position}</p>
+                            <div class="candidate-details">
+                                <p><i class="fas fa-venus-mars"></i> ${candidate.gender}</p>
+                                <p><i class="fas fa-graduation-cap"></i> ${candidate.course}</p>
+                                <p><i class="fas fa-calendar"></i> ${candidate.year_level}</p>
+                            </div>
+                            ${candidate.description ? `<p class="description">${candidate.description}</p>` : ''}
+                            <div class="candidate-actions">
+                                <button class="btn-edit" onclick="editCandidate(${candidate.candidate_id})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-delete" onclick="deleteCandidate(${candidate.candidate_id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                const candidatesGrid = document.getElementById('candidatesGrid');
+                candidatesGrid.innerHTML = `
+                    <div class="no-candidates">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading candidates</p>
+                        <small>Please try again later</small>
+                    </div>
+                `;
+            }
+        }
+
+        async function editCandidate(id) {
+            // Load current candidate list to find the selected one from the rendered grid
+            try{
+                // get latest data so fields are fresh
+                const res = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/ultra_simple_api.php?action=get_candidates');
+                const js = await res.json();
+                let selected = null;
+                if(js.success && js.data){
+                    for(const arr of Object.values(js.data)){
+                        const found = arr.find(c=> Number(c.candidate_id) === Number(id));
+                        if(found){ selected = found; break; }
+                    }
+                }
+                if(!selected) return;
+
+                // Populate form
+                document.getElementById('firstName').value = selected.first_name || '';
+                document.getElementById('lastName').value = selected.last_name || '';
+                document.getElementById('position').value = selected.position || '';
+                document.getElementById('gender').value = selected.gender || '';
+                document.getElementById('course').value = selected.course || '';
+                document.getElementById('year').value = selected.year_level || '';
+                document.getElementById('description').value = selected.description || '';
+
+                // Add hidden input to know we are updating
+                let hidden = document.getElementById('editingId');
+                if(!hidden){ hidden = document.createElement('input'); hidden.type='hidden'; hidden.id='editingId'; hidden.name='editingId'; document.getElementById('candidateForm').appendChild(hidden); }
+                hidden.value = id;
+
+                // Scroll to form
+                document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+            }catch(e){ console.error('edit load error', e); }
+        }
+
+        async function deleteCandidate(id) {
+            if (confirm('Are you sure you want to delete this candidate?')) {
+                try {
+                    const response = await fetch('/STUDENT%20VOTING%20MANAGEMENT%20SYSTEM/config/ultra_simple_api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'delete_candidate',
+                            candidate_id: id
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        loadCandidates();
+                        alert('Candidate deleted successfully');
+                    } else {
+                        alert('Error deleting candidate: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting candidate:', error);
+                    alert('Error deleting candidate. Please try again.');
+                }
+            }
+        }
+
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = ['firstName', 'lastName', 'position', 'gender', 'course', 'year'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    errorElement.textContent = 'This field is required';
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    errorElement.textContent = '';
+                }
+            });
+            
+            return isValid;
+        }
+
+        function resetForm() {
+            document.getElementById('candidateForm').reset();
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.textContent = '';
+            });
+            const errorFields = document.querySelectorAll('.error');
+            errorFields.forEach(field => {
+                field.classList.remove('error');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
+        function refreshList() {
+            loadCandidates();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('successModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        
+    </script>
+</body>
+</html>

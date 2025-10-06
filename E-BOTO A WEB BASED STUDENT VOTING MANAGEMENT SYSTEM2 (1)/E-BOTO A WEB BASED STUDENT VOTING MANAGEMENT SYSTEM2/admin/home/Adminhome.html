@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home - Navbar Only (Updated)</title>
+    <meta name="color-scheme" content="light only">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" href="../../pictures/logo.png">
+    <link rel="stylesheet" href="Adminhome.css?v=20241220">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Admin navigation" style="position: relative; padding-left: 220px;">
+            <div class="navbar-logo" style="position:absolute; left:20px; top:50%; transform: translateY(-50%); display:flex; align-items:center; gap:10px;">
+                <img src="../../pictures/UM-TAGUM (1).png" alt="UM-TAGUM College Logo" class="navbar-logo-img" style="width:46px;height:46px;object-fit:contain;border-radius:50%;background:#fff;padding:2px;">
+                <span class="brand-title" style="color:#fff; font-weight:800; letter-spacing:.5px; font-size:18px; text-transform:uppercase;">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="Adminhome.html" class="active">Home</a></li>
+                <li role="none"><a role="menuitem" href="../admin candidate/admincandidate.html">Candidate</a></li>
+                <li role="none"><a role="menuitem" href="voter_list.html">Voter List</a></li>
+                <li role="none"><a role="menuitem" href="leading_candidates.html">Leading Candidate</a></li>
+                <li role="none" class="dropdown">
+                    <a role="menuitem" href="#" class="dropdown-toggle" onclick="toggleAdminDropdown(event)">
+                        Admin <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu" id="adminDropdown">
+                        <div class="dropdown-header">
+                            <div class="admin-profile">
+                                <i class="fas fa-user-circle"></i>
+                                <div class="admin-info">
+                                    <div class="admin-name">System Administrator</div>
+                                    <div class="admin-role">super_admin</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="admin-content">
+        <div class="welcome-section">
+            <h1>Welcome to Admin Dashboard</h1>
+            <p id="admin-info">Loading admin information...</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Total Voters</h3>
+                <p class="number">0</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3>Total Candidates</h3>
+                <p class="number">0</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <h3>Total Vote Submit</h3>
+                <p class="number">0</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // Check if admin is logged in
+    function checkAdminSession() {
+        // Check if we have session data
+        const sessionData = sessionStorage.getItem('admin_session') || localStorage.getItem('admin_session');
+        
+        if (!sessionData) {
+            // No session data, redirect to login
+            window.location.href = '../Admin login/AdminLogin.html';
+            return;
+        }
+        
+        try {
+            const session = JSON.parse(sessionData);
+            if (!session.admin_id || !session.username) {
+                // Invalid session data, redirect to login
+                window.location.href = '../Admin login/AdminLogin.html';
+                return;
+            }
+            
+            // Display admin info
+            displayAdminInfo(session);
+            
+        } catch (e) {
+            // Invalid session data, redirect to login
+            window.location.href = '../Admin login/AdminLogin.html';
+        }
+    }
+    
+        // Display admin information
+        function displayAdminInfo(session) {
+            const adminInfo = document.getElementById('admin-info');
+            if (adminInfo) {
+                adminInfo.innerHTML = `Welcome, <strong>System Administrator</strong> (super_admin)`;
+            }
+            
+            console.log('Admin logged in:', session);
+        }
+    
+    // Toggle admin dropdown
+    function toggleAdminDropdown(event) {
+        event.preventDefault();
+        const dropdown = event.target.closest('.dropdown');
+        const isActive = dropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        
+        // Toggle current dropdown
+        if (!isActive) {
+            dropdown.classList.add('active');
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        }
+    });
+    
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        console.log('Loading dashboard statistics...');
+        try {
+            const response = await fetch('../../config/dashboard_stats_api.php');
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Dashboard stats response:', data);
+            
+            if (data.success) {
+                console.log('Successfully loaded dashboard stats:', data.data);
+                updateDashboardCards(data.data);
+            } else {
+                console.error('Error loading dashboard stats:', data.error);
+                alert('Error loading dashboard data: ' + data.error);
+                // Show default values on error
+                updateDashboardCards({
+                    total_voters: 0,
+                    active_voters: 0,
+                    total_candidates: 0,
+                    votes_cast: 0,
+                    active_elections: 0,
+                    voted: 0
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+            alert('Error connecting to server: ' + error.message);
+            // Show default values on error
+            updateDashboardCards({
+                total_voters: 0,
+                active_voters: 0,
+                total_candidates: 0,
+                votes_cast: 0,
+                active_elections: 0,
+                voted: 0
+            });
+        }
+    }
+    
+        // Update dashboard cards with real data
+        function updateDashboardCards(stats) {
+            // Update total voters
+            const totalVotersElement = document.querySelector('.card:nth-child(1) .number');
+            if (totalVotersElement) {
+                totalVotersElement.textContent = stats.total_voters;
+            }
+            
+            // Update total candidates
+            const totalCandidatesElement = document.querySelector('.card:nth-child(2) .number');
+            if (totalCandidatesElement) {
+                totalCandidatesElement.textContent = stats.total_candidates;
+            }
+            
+            // Update votes cast
+            const votesCastElement = document.querySelector('.card:nth-child(3) .number');
+            if (votesCastElement) {
+                votesCastElement.textContent = stats.votes_cast;
+            }
+            
+            console.log('Dashboard stats updated:', stats);
+        }
+    
+    // Logout function
+    function logout() {
+        // Clear session data
+        sessionStorage.removeItem('admin_session');
+        localStorage.removeItem('admin_session');
+        
+        // Redirect to login
+        window.location.href = '../Admin login/AdminLogin.html';
+    }
+    
+    // Check session and load data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAdminSession();
+        loadDashboardStats();
+    });
+    </script>
+</body>
+</html>
