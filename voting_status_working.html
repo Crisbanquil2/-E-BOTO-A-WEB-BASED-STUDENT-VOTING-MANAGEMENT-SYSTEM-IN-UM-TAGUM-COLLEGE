@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Status - Working Version</title>
+    <link rel="icon" href="../pictures/logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Use the same dashboard styles (navbar, layout) as Home for perfect alignment -->
+    <link rel="stylesheet" href="../Dasboard%20for%20Student%20or%20user/dashboard.css?v=4">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 0; /* match Home navbar layout */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #d32f2f;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .content {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .left-section {
+            flex: 1;
+        }
+
+        .right-section {
+            flex: 1;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 3px solid #d32f2f;
+            font-size: 0.9rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .status-card.voted {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .status-card.not-voted {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .status-card i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .status-card.voted i {
+            color: #28a745;
+        }
+
+        .status-card.not-voted i {
+            color: #ffc107;
+        }
+
+        .status-card h3 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .status-card p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .voting-history {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            height: fit-content;
+        }
+
+        .history-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #d32f2f;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #d32f2f;
+        }
+
+        .voting-summary {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            height: fit-content;
+        }
+
+        .vote-item {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .vote-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .vote-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .candidate-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #28a745;
+        }
+
+        .vote-details {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .position {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .vote-date {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .vote-status {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .no-votes {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .no-votes i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .no-votes h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .no-votes p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        /* Ensure navbar matches Home even if external CSS fails to load */
+        .topbar { 
+            position:sticky; top:0; z-index:10; 
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            border-bottom: 3px solid rgba(255,255,255,0.1);
+            backdrop-filter: saturate(180%) blur(6px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .nav { 
+            max-width:1400px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:24px; padding:18px 24px; 
+            position: relative; padding-left: 220px;
+        }
+        .navbar-logo { position:absolute; left:20px; top:50%; transform: translateY(-50%); display:flex; align-items:center; gap:10px; }
+        .navbar-logo-img { width:46px !important; height:46px !important; object-fit:contain; border-radius:50%; background:#fff; padding:2px; }
+        .menu { list-style:none; padding:0; margin:0; display:flex; gap:60px; background:transparent; border:none; justify-content:center; }
+        .menu a { position:relative; text-decoration:none; color:#ffffff; padding:15px 20px; display:inline-block; line-height:1; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size:18px; font-weight:600; border-radius:12px; text-transform:uppercase; letter-spacing:0.5px; }
+        .menu a::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); border-radius:12px; opacity:0; transition:opacity 0.3s ease; }
+        .menu a::after { content:""; position:absolute; left:50%; right:50%; bottom:-8px; height:3px; background: linear-gradient(90deg, #ffffff, #ffebee); transform: translateX(-50%) scaleX(0); transform-origin:center; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius:2px; width:0; }
+        .menu a:hover { color:#ffffff; transform: translateY(-2px); text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .menu a:hover::before { opacity:1; }
+        .menu a:hover::after { transform: translateX(-50%) scaleX(1); width:80%; }
+        .menu a.active { color:#ffffff; background: rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .menu a.active::after { transform: translateX(-50%) scaleX(1); width:80%; }
+    </style>
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <nav class="nav" aria-label="Main navigation">
+            <div class="navbar-logo">
+                <img src="../pictures/UM-TAGUM (1).png" alt="UM College Logo" class="navbar-logo-img">
+                <span class="brand-title" style="color:#fff; font-weight:800; letter-spacing:.5px; font-size:18px; text-transform:uppercase;">Vote Na GA!</span>
+            </div>
+            <ul class="menu" role="menubar">
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/index.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/candidates.html">Candidates</a></li>
+                <li role="none"><a role="menuitem" href="#" class="active">Voting Status</a></li>
+                <li role="none"><a role="menuitem" href="../Dasboard for Student or user/index.html#results-section">Leading Candidate</a></li>
+                <li role="none"><a role="menuitem" href="../Account/account.html">Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-vote-yea"></i> Voting Status</h1>
+            <p>Check your voting progress and history</p>
+        </div>
+
+        <div class="content">
+            <div class="student-info" id="studentInfo">
+                <i class="fas fa-user"></i> Loading student information...
+            </div>
+
+            <div id="messageContainer"></div>
+            <div id="debugInfo" class="debug-info" style="display: none;"></div>
+
+            <div class="left-section">
+                <div class="voting-summary">
+                    <div class="summary-title">
+                        <i class="fas fa-chart-bar"></i> Voting Summary
+                    </div>
+                    <div class="status-grid" id="statusGrid">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            <p>Loading voting status...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-section">
+                <div class="voting-history">
+                    <div class="history-title">
+                        <i class="fas fa-history"></i> Your Voting History
+                    </div>
+                    <div id="votingHistory">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            <p>Loading voting history...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Theme bootstrap to keep dark mode consistent across pages
+        (function(){
+            try {
+                var theme = localStorage.getItem('svms_theme');
+                if(theme){ document.documentElement.setAttribute('data-theme', theme); }
+                window.addEventListener('storage', function(e){
+                    if(e.key === 'svms_theme'){ document.documentElement.setAttribute('data-theme', e.newValue || ''); }
+                });
+            } catch(e) {}
+        })();
+        let currentStudent = null;
+        let studentVotes = [];
+        let allCandidates = [];
+        let debugMode = false;
+
+        // Debug function
+        function debugLog(message, data = null) {
+            console.log('[VOTING STATUS DEBUG]', message, data);
+            if (debugMode) {
+                const debugDiv = document.getElementById('debugInfo');
+                const timestamp = new Date().toLocaleTimeString();
+                debugDiv.innerHTML += `<div>[${timestamp}] ${message} ${data ? JSON.stringify(data, null, 2) : ''}</div>`;
+                debugDiv.style.display = 'block';
+            }
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const debugDiv = document.getElementById('debugInfo');
+            if (debugMode) {
+                debugDiv.style.display = 'block';
+                debugDiv.innerHTML = '<h3>Debug Information:</h3>';
+            } else {
+                debugDiv.style.display = 'none';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Page loaded, starting initialization...');
+            checkStudentSession();
+        });
+
+        function checkStudentSession() {
+            debugLog('Checking student session...');
+            const sessionData = sessionStorage.getItem('svms_session') || localStorage.getItem('svms_session');
+            
+            if (!sessionData) {
+                debugLog('No session data found');
+                showMessage('No login session found. Please login first.', 'error');
+                setTimeout(() => {
+                    window.location.href = '../Login/login.html';
+                }, 3000);
+                return;
+            }
+            
+            try {
+                currentStudent = JSON.parse(sessionData);
+                debugLog('Session data parsed successfully', currentStudent);
+                
+                if (!currentStudent.studentId) {
+                    debugLog('No studentId in session data');
+                    showMessage('Invalid session data. Please login again.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '../Login/login.html';
+                    }, 3000);
+                    return;
+                }
+                
+                document.getElementById('studentInfo').innerHTML = 
+                    `<i class="fas fa-user"></i> <strong>${currentStudent.firstName} ${currentStudent.lastName}</strong><br>
+                     Student ID: ${currentStudent.studentId}`;
+                
+                debugLog('Student info displayed successfully');
+                loadAllData();
+            } catch (e) {
+                debugLog('Error parsing session data', e.message);
+                showMessage('Error reading session data. Please login again.', 'error');
+                setTimeout(() => {
+                    window.location.href = '../Login/login.html';
+                }, 3000);
+            }
+        }
+
+        async function loadAllData() {
+            debugLog('Loading all data...');
+            try {
+                await Promise.all([
+                    loadCandidates(),
+                    loadStudentVotes()
+                ]);
+                displayAllData();
+            } catch (error) {
+                debugLog('Error loading data', error.message);
+                showMessage('Error loading data. Please try again.', 'error');
+            }
+        }
+
+        async function loadCandidates() {
+            debugLog('Loading candidates...');
+            try {
+                const response = await fetch('../config/candidates_api.php?action=get_candidates');
+                debugLog('Candidates API response status', response.status);
+                
+                const responseText = await response.text();
+                debugLog('Candidates API raw response', responseText.substring(0, 200) + '...');
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    debugLog('JSON Parse Error for candidates', parseError.message);
+                    showMessage('Invalid response from candidates API.', 'error');
+                    return;
+                }
+                
+                debugLog('Candidates data parsed successfully', data);
+                
+                if (data.success) {
+                    allCandidates = data.candidates || [];
+                    debugLog('Candidates loaded successfully', allCandidates.length + ' candidates');
+                } else {
+                    debugLog('Candidates API failed', data.message);
+                    showMessage('Failed to load candidates: ' + data.message, 'error');
+                }
+            } catch (error) {
+                debugLog('Error loading candidates', error.message);
+                showMessage('Error loading candidates. Please check your connection.', 'error');
+            }
+        }
+
+        async function loadStudentVotes() {
+            debugLog('Loading student votes for student ID: ' + currentStudent.studentId);
+            try {
+                const url = `../config/voting_api.php?action=get_student_votes&studentId=${currentStudent.studentId}`;
+                debugLog('Voting API URL', url);
+                
+                const response = await fetch(url);
+                debugLog('Voting API response status', response.status);
+                
+                const responseText = await response.text();
+                debugLog('Voting API raw response', responseText.substring(0, 200) + '...');
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    debugLog('JSON Parse Error for votes', parseError.message);
+                    showMessage('Invalid response from voting API.', 'error');
+                    return;
+                }
+                
+                debugLog('Votes data parsed successfully', data);
+                
+                if (data.success) {
+                    studentVotes = data.votes || [];
+                    debugLog('Student votes loaded successfully', studentVotes.length + ' votes');
+                } else {
+                    debugLog('Voting API failed', data.message);
+                    studentVotes = [];
+                    if (data.message && !data.message.includes('No votes')) {
+                        showMessage('Failed to load votes: ' + data.message, 'error');
+                    }
+                }
+            } catch (error) {
+                debugLog('Error loading student votes', error.message);
+                studentVotes = [];
+                showMessage('Error loading voting history. Please check your connection.', 'error');
+            }
+        }
+
+        function displayAllData() {
+            debugLog('Displaying all data...');
+            displayStatusSummary();
+            displayVotingHistory();
+        }
+
+        function displayStatusSummary() {
+            debugLog('Displaying status summary...');
+            const positions = [...new Set(allCandidates.map(c => c.position))];
+            const votedPositions = studentVotes.map(v => v.position);
+            
+            debugLog('Positions found', positions);
+            debugLog('Voted positions', votedPositions);
+            
+            const statusGrid = document.getElementById('statusGrid');
+            
+            if (positions.length === 0) {
+                debugLog('No positions available');
+                statusGrid.innerHTML = `
+                    <div class="error">
+                        <h3><i class="fas fa-exclamation-triangle"></i> No Positions Available</h3>
+                        <p>No candidate positions found in the system.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            statusGrid.innerHTML = positions.map(position => {
+                const hasVoted = votedPositions.includes(position);
+                const vote = studentVotes.find(v => v.position === position);
+                
+                debugLog(`Position: ${position}, Has voted: ${hasVoted}`, vote);
+                
+                // Safe access to vote data
+                const candidateName = vote && vote.first_name && vote.last_name ? 
+                    `${vote.first_name} ${vote.last_name}` : 
+                    (vote ? 'Unknown Candidate' : '');
+                
+                return `
+                    <div class="status-card ${hasVoted ? 'voted' : 'not-voted'}">
+                        <i class="fas fa-${hasVoted ? 'check-circle' : 'clock'}"></i>
+                        <h3>${position}</h3>
+                        <p>${hasVoted ? `✅ Voted for ${candidateName}` : '⏳ Not voted yet'}</p>
+                    </div>
+                `;
+            }).join('');
+            
+            debugLog('Status summary displayed successfully');
+        }
+
+        function displayVotingHistory() {
+            debugLog('Displaying voting history...');
+            const historyContainer = document.getElementById('votingHistory');
+            
+            debugLog('Student votes count', studentVotes.length);
+            
+            if (studentVotes.length === 0) {
+                debugLog('No votes found, showing empty state');
+                historyContainer.innerHTML = `
+                    <div class="no-votes">
+                        <i class="fas fa-vote-yea"></i>
+                        <h3>No Votes Yet</h3>
+                        <p>You haven't voted for any candidates yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            debugLog('Displaying vote history for votes', studentVotes);
+            historyContainer.innerHTML = studentVotes.map(vote => {
+                const voteDate = vote.voted_at ? new Date(vote.voted_at).toLocaleString() : 'Unknown date';
+                const candidateName = `${vote.first_name || 'Unknown'} ${vote.last_name || 'Candidate'}`;
+                const position = vote.position || 'Unknown Position';
+                const photo = vote.photo || '';
+                
+                debugLog(`Rendering vote`, vote);
+                
+                // Additional safety checks
+                if (!vote || (!vote.first_name && !vote.last_name)) {
+                    debugLog('Invalid vote data detected', vote);
+                    return `
+                        <div class="vote-item">
+                            <img src="../pictures/logo.png" alt="Unknown" class="candidate-photo">
+                            <div class="vote-details">
+                                <div class="candidate-name">Invalid Vote Data</div>
+                                <div class="position">${position}</div>
+                                <div class="vote-date">Voted on ${voteDate}</div>
+                            </div>
+                            <div class="vote-status">
+                                <i class="fas fa-exclamation-triangle"></i> Error
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="vote-item">
+                        ${photo ? `<img src="${photo}" alt="${candidateName}" class="candidate-photo" onerror="this.style.display='none'; this.insertAdjacentHTML('beforebegin', '<div class=\'no-photo\' style=\'width:60px;height:60px;border-radius:50%;background:#e5e7eb;border:3px solid #28a745;display:flex;align-items:center;justify-content:center;color:#6b7280;margin-right:20px;\'><i class=\'fas fa-user\'></i></div>')">` : `<div class='no-photo' style="width:60px;height:60px;border-radius:50%;background:#e5e7eb;border:3px solid #28a745;display:flex;align-items:center;justify-content:center;color:#6b7280;margin-right:20px;"><i class='fas fa-user'></i></div>`}
+                        <div class="vote-details">
+                            <div class="candidate-name">${candidateName}</div>
+                            <div class="position">${position}</div>
+                            <div class="vote-date">Voted on ${voteDate}</div>
+                        </div>
+                        <div class="vote-status">
+                            <i class="fas fa-check"></i> Voted
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            debugLog('Voting history displayed successfully');
+        }
+
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function refreshData() {
+            debugLog('Refreshing data...');
+            showMessage('Refreshing data...', 'info');
+            loadAllData();
+        }
+
+        // Handle navigation clicks
+        function handleNavClick(event) {
+            const href = event.target.getAttribute('href');
+            if (href && href !== '#') {
+                // Allow normal navigation
+                return true;
+            }
+            event.preventDefault();
+        }
+
+        // Add click handlers to navigation links
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', handleNavClick);
+            });
+        });
+    </script>
+</body>
+</html>
